@@ -9,3 +9,6 @@ apply_pattern linker_library library=ElecDataStruct
 
 application test_ElecData_Event ../test/test_Event.cc
 macro_append test_ElecData_Event_dependencies ElecDataStruct
+
+application test_ElecData_CircularBuffer ../test/test_CircularBuffer.cc
+macro_append test_ElecData_CircularBuffer_dependencies ElecDataStruct
