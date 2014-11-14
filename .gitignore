@@ -28,3 +28,9 @@
 *.app
 
 amd64_linux26
+cleanup.csh
+cleanup.sh
+Makefile
+setup.csh
+setup.sh
+
