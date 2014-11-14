@@ -1,2 +1,8 @@
 package ElecDataStruct
 
+use SniperKernel v*
+
+apply_pattern install_more_includes more=ElecDataStruct
+library ElecDataStruct *.cc
+
+apply_pattern linker_library library=ElecDataStruct
