@@ -6,3 +6,6 @@ apply_pattern install_more_includes more=ElecDataStruct
 library ElecDataStruct *.cc
 
 apply_pattern linker_library library=ElecDataStruct
+
+application test_ElecData_Event ../test/test_Event.cc
+macro_append test_ElecData_Event_dependencies ElecDataStruct
