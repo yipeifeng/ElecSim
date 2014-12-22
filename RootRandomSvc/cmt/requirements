@@ -1,0 +1,20 @@
+package RootRandomSvc
+
+
+use SniperKernel v*
+use ROOT v* Externals
+
+
+
+
+library RootRandomSvc *.cc 
+
+apply_pattern install_more_includes more="RootRandomSvc"
+
+apply_pattern linker_library library=RootRandomSvc
+
+apply_pattern install_python_modules
+
+
+
+

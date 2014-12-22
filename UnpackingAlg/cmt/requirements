@@ -1,2 +1,31 @@
 package UnpackingAlg
 
+
+use SniperKernel   v*
+use ROOT v* Externals
+use Boost v* Externals
+
+
+# For Data Buffer and IO
+use SimEventV2 v* DataModel 
+use ElecEvent v* DataModel 
+use EvtNavigator v* DataModel
+use Identifier v* Detector
+use BufferMemMgr v* CommonSvc
+use Context v* DataModel
+use DataRegistritionSvc v* DataModel
+
+use InputReviser v* Utilities
+
+
+use RootRandomSvc v*
+use GlobalTimeSvc v*
+
+
+library UnpackingAlg *.cc
+apply_pattern linker_library library = UnpackingAlg
+apply_pattern install_python_modules
+
+
+
+

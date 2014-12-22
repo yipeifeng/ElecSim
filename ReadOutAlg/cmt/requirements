@@ -1,4 +1,5 @@
-package EvtMixingAlg
+package ReadOutAlg
+
 
 use SniperKernel   v*
 use ROOT v* Externals
@@ -21,13 +22,9 @@ use RootRandomSvc v*
 use GlobalTimeSvc v*
 
 
-library EvtMixingAlg *.cc
-apply_pattern linker_library library = EvtMixingAlg
+library ReadOutAlg *.cc
+apply_pattern linker_library library = ReadOutAlg
 apply_pattern install_python_modules
-
-
-
-
 
 
 

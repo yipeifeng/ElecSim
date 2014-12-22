@@ -27,6 +27,16 @@
 *.out
 *.app
 
+#root file 
+*.root
+
+#other files need ignore
+install.history
+*log
+*.swp
+
+
+
 amd64_linux26
 cleanup.csh
 cleanup.sh
