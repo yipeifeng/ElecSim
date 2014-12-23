@@ -20,6 +20,7 @@ use InputReviser v* Utilities
 
 use RootRandomSvc v*
 use GlobalTimeSvc v*
+use ElecDataStruct v*
 
 
 library UnpackingAlg *.cc

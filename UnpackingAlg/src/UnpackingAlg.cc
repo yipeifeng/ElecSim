@@ -16,6 +16,7 @@
 #include "Context/TimeStamp.h"
 #include "SniperKernel/Task.h"
 #include "GlobalTimeSvc/IGlobalTimeSvc.h"
+#include "ElecDataStruct/Hit.h"
 
 
 using namespace std;
@@ -117,6 +118,19 @@ bool UnpackingAlg::put_data_to_HitBuffer(){
         //LogInfo<<"hit Time: " << hit_hitTime<<endl;
         // FIXME
         // if we get a merged hit, what's the nPhotons???
+        
+        TimeStamp EvtTimeStamp(m_current_evt_TimeStamp.GetSec(), m_current_evt_TimeStamp.GetNanoSec()); // convert TTimeStamp to TimeStamp
+        TimeStamp m_hitTime = EvtTimeStamp;  
+        m_hitTime.Add(hit_hitTime*1e-9);//convert ns to s ,get the global hitTime
+
+        double m_weight = 1;
+
+        Hit m_hit(hit_pmtId, m_hitTime, EvtTimeStamp, m_weight);
+        //LogInfo<<"EvtTimeStamp: " << EvtTimeStamp<<endl;
+        //LogInfo<<"relative_hitTime_ns: " <<  m_hit.relative_hitTime_ns()<<endl;
+
+
+
         ++m_nPhotons;
 
     }

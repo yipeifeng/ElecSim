@@ -1,6 +1,12 @@
 package ElecDataStruct
 
 use SniperKernel v*
+use Context v* DataModel
+
+
+
+
+
 
 apply_pattern install_more_includes more=ElecDataStruct
 library ElecDataStruct *.cc
