@@ -61,23 +61,23 @@ if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
 
+    samples = [ 
+            {"name": "IBD_sample_1",
+                "rate": 1, #Hz 
+                "input": ["IBD_1.root", "IBD_2.root"]},
+            {"name": "IBD_sample_2",
+                "rate": 2, #Hz 
+                "input": ["IBD_3.root", "IBD_4.root"]},
+            {"name": "IBD_sample_3",
+                "rate": 3, #Hz
+                "input": ["IBD_5.root", "IBD_6.root"]}
+            ]
+
 #    samples = [ 
-#            {"name": "sample1",
+#            {"name": "IBD_sample",
 #                "rate": 0.01, #Hz 
 #                "input": ["IBD_1.root"]},
-#            {"name": "sample2",
-#                "rate": 0.02, #Hz 
-#                "input": ["IBD_3.root", "IBD_4.root"]},
-#            {"name": "sample3",
-#                "rate": 0.03, #Hz
-#                "input": ["IBD_5.root", "IBD_6.root"]}
 #            ]
-
-    samples = [ 
-            {"name": "IBD_sample",
-                "rate": 0.01, #Hz 
-                "input": ["IBD_1.root"]},
-            ]
 
     bufSize = 5.0 #second
 

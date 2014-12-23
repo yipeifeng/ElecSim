@@ -38,6 +38,7 @@ class UnpackingAlg: public AlgBase
         JM::SimHeader* m_simheader;
         JM::SimEvent* m_simevent;
         double m_nPhotons;
+        TTimeStamp m_current_evt_TimeStamp;
 
 
 

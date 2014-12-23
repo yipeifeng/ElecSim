@@ -38,6 +38,7 @@ UnpackingAlg::~UnpackingAlg(){
 
 bool UnpackingAlg::initialize(){
     m_nPhotons = 0;
+    m_current_evt_TimeStamp = 0;
     return true;
 
 }
@@ -93,6 +94,10 @@ bool UnpackingAlg::load_event_data(){
     if (not m_simevent) {
         return false;
     }
+
+    m_current_evt_TimeStamp = evt_nav->TimeStamp();
+    LogInfo<<"load evt TimeStamp: "<<m_current_evt_TimeStamp<<endl;
+
     return true;
 
 }

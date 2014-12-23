@@ -18,7 +18,7 @@ RootRandomSvc::~RootRandomSvc(){
 
 bool RootRandomSvc::initialize(){
 
-    LogDebug<<"Initialize the SEED = "
+    LogInfo<<"Initialize the SEED = "
             <<m_init_seed
             <<std::endl;
 
@@ -30,7 +30,7 @@ bool RootRandomSvc::initialize(){
 
 
 bool RootRandomSvc::finalize(){
-    LogDebug << "Finalize the SEED="
+    LogInfo << "Finalize the SEED="
              << gRandom->GetSeed()
              << std::endl;
     return true;

@@ -118,11 +118,12 @@ string EvtMixingAlg::select()
 JM::EvtNavigator* EvtMixingAlg::get_one_event(){
 
     string sample = select();//select sample as input sample name
+        LogInfo<<"selected sample: " <<sample<<endl;
 
     //readin event data
     if( m_firstMap[sample] ){
         int entries = m_incidentMap[sample]->getEntries();
-        LogInfo<<"selected sample: "<<sample <<", sample entries: " <<entries<<endl;
+        LogInfo<<"initial selected sample: "<<sample <<", sample entries: " <<entries<<endl;
         int num = gRandom->Integer(entries-1);
         LogInfo<<"first evt num: "<<num<<endl;
         m_incidentMap[sample]->reset(num);//we will read data from this entry
