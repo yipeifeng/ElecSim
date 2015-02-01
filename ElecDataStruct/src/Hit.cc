@@ -12,6 +12,12 @@ TimeStamp Hit::hitTime(){
 }
 
 
+TimeStamp Hit::hitTime() const{
+    return m_hitTime;
+}
+
+
+
 TimeStamp Hit::EvtTimeStamp(){
     return m_EvtTimeStamp;
 }

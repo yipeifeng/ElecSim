@@ -3,6 +3,8 @@
 #include "SniperKernel/AlgBase.h"
 #include "EvtNavigator/NavBuffer.h"
 #include "Context/TimeStamp.h"
+#include "ElecBufferMgrSvc/IElecBufferMgrSvc.h"
+#include "GlobalTimeSvc/IGlobalTimeSvc.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -27,10 +29,18 @@ class ReadOutAlg: public AlgBase
 
     private:
 
+        bool get_Services();
+        bool put_hit_into_buffer();
+
 
 
     private:
     int m_evtID;
+    IElecBufferMgrSvc* BufferSvc;
+    IGlobalTimeSvc* TimeSvc;
+
+
+
 
 };
 

@@ -5,6 +5,8 @@ use SniperKernel   v*
 use ROOT v* Externals
 
 
+use Context v* DataModel
+
 library GlobalTimeSvc *.cc
 
 

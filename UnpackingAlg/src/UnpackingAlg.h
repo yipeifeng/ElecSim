@@ -3,6 +3,7 @@
 #include "SniperKernel/AlgBase.h"
 #include "EvtNavigator/NavBuffer.h"
 #include "Context/TimeStamp.h"
+#include "ElecBufferMgrSvc/IElecBufferMgrSvc.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -27,8 +28,13 @@ class UnpackingAlg: public AlgBase
 
     private:
 
+        bool init_variable();
+        bool get_BufferMgrSvc();
+
+
         bool load_event_data();
         bool put_data_to_HitBuffer();
+        bool sort_buffer();
 
 
 
@@ -40,7 +46,7 @@ class UnpackingAlg: public AlgBase
         double m_nPhotons;
         TTimeStamp m_current_evt_TimeStamp;
 
-
+        IElecBufferMgrSvc* BufferSvc;
 
 
 

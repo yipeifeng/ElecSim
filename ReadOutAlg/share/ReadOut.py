@@ -63,13 +63,13 @@ if __name__ == "__main__":
 
     samples = [ 
             {"name": "IBD_sample_1",
-                "rate": 1, #Hz 
+                "rate": 10000, #Hz 
                 "input": ["IBD_1.root", "IBD_2.root"]},
             {"name": "IBD_sample_2",
-                "rate": 2, #Hz 
+                "rate": 20000, #Hz 
                 "input": ["IBD_3.root", "IBD_4.root"]},
             {"name": "IBD_sample_3",
-                "rate": 3, #Hz
+                "rate": 30000, #Hz
                 "input": ["IBD_5.root", "IBD_6.root"]}
             ]
 
@@ -113,6 +113,16 @@ if __name__ == "__main__":
     task_top.property("svcs").append("GlobalTimeSvc")
     time = task_top.find("GlobalTimeSvc")
     time.property("start").set(args.start)
+    
+
+    #add ElecBufferMgrSvc
+    import ElecBufferMgrSvc
+    task_top.property("svcs").append("ElecBufferMgrSvc")
+    bufferMgr = task_top.find("ElecBufferMgrSvc")
+
+
+
+
 
 
     #add ReadOutAlg

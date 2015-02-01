@@ -43,11 +43,17 @@ bool GlobalTimeSvc::finalize(){
 }
 
 
-TTimeStamp GlobalTimeSvc::get_current_evt_time(TTimeStamp delta){
+TTimeStamp GlobalTimeSvc::set_current_evt_time(TTimeStamp delta){
 
     current_evt_time.Add(delta);  
     return current_evt_time;
 
+}
+
+
+
+TTimeStamp GlobalTimeSvc::get_current_evt_time(){
+    return current_evt_time;
 }
 
 
@@ -63,6 +69,23 @@ TTimeStamp GlobalTimeSvc::str2time(string str_time)
     TTimeStamp answer(tTime,0);
     return answer;
 }
+
+
+
+TimeStamp GlobalTimeSvc::get_start_time(){
+
+
+    TTimeStamp StartTime = str2time(m_start_Time);
+
+    TimeStamp m_StartTime(StartTime.GetSec(), StartTime.GetNanoSec() );
+
+    return m_StartTime;
+
+}
+
+
+
+
 
 
 

@@ -16,6 +16,7 @@
 #include "Context/TimeStamp.h"
 #include "SniperKernel/Task.h"
 #include "GlobalTimeSvc/IGlobalTimeSvc.h"
+#include "ElecBufferMgrSvc/IElecBufferMgrSvc.h"
 #include "ElecDataStruct/Hit.h"
 
 
@@ -38,8 +39,11 @@ UnpackingAlg::~UnpackingAlg(){
 
 
 bool UnpackingAlg::initialize(){
-    m_nPhotons = 0;
-    m_current_evt_TimeStamp = 0;
+    init_variable();
+    get_BufferMgrSvc();
+
+
+
     return true;
 
 }
@@ -50,6 +54,7 @@ bool UnpackingAlg::execute(){
 
     load_event_data(); 
     put_data_to_HitBuffer();
+    sort_buffer();
 
 
     return true;
@@ -68,6 +73,8 @@ bool UnpackingAlg::finalize(){
 bool UnpackingAlg::load_event_data(){
 
     JM::NavBuffer* navBuf = 0;
+
+    LogInfo<<"Incident::fire EvtMixingTask"<<endl;
     Incident::fire("EvtMixingTask");
 
     SniperDataPtr<JM::NavBuffer>  navBufPtr("EvtMixingTask:/Event");
@@ -109,16 +116,19 @@ bool UnpackingAlg::put_data_to_HitBuffer(){
 
     assert(m_simevent);
     JM::SimPMTHit* hit = 0;
+
+
     TIter next_hit(m_simevent->getCDHits());
+
     while( (hit = (JM::SimPMTHit*)next_hit()) ) {
         int hit_pmtId = hit->getPMTID();
         //cout<<"hit_pmtID: " << hit_pmtId<<endl;
         double hit_hitTime = hit->getHitTime();
-        
+
         //LogInfo<<"hit Time: " << hit_hitTime<<endl;
         // FIXME
         // if we get a merged hit, what's the nPhotons???
-        
+
         TimeStamp EvtTimeStamp(m_current_evt_TimeStamp.GetSec(), m_current_evt_TimeStamp.GetNanoSec()); // convert TTimeStamp to TimeStamp
         TimeStamp m_hitTime = EvtTimeStamp;  
         m_hitTime.Add(hit_hitTime*1e-9);//convert ns to s ,get the global hitTime
@@ -130,13 +140,46 @@ bool UnpackingAlg::put_data_to_HitBuffer(){
         //LogInfo<<"relative_hitTime_ns: " <<  m_hit.relative_hitTime_ns()<<endl;
 
 
+        BufferSvc -> save_to_HitBuffer(m_hit);
 
         ++m_nPhotons;
 
     }
     LogInfo<<"nPhotons: " << m_nPhotons<<endl;
+    LogInfo<<"hitNum in buffer: "<< ( BufferSvc->get_HitBuffer() ).size()<<endl;
 
     return true;
 }
+
+
+
+bool UnpackingAlg::init_variable(){
+    m_nPhotons = 0;
+    m_current_evt_TimeStamp = 0;
+    return true;
+}
+
+
+bool UnpackingAlg::get_BufferMgrSvc(){
+
+    SniperPtr<IElecBufferMgrSvc> BufferSvcPtr(Task::top(),"ElecBufferMgrSvc");
+    BufferSvc = BufferSvcPtr.data();
+
+    return true;
+}
+
+
+
+bool UnpackingAlg::sort_buffer(){
+
+    BufferSvc->SortHitBuffer();
+    //for(int i=0; i<100; i++){
+    //    LogInfo<<"hitTime: "<<BufferSvc->get_HitBuffer()[i].relative_hitTime_ns()<<endl; 
+    //}
+
+
+    return true;
+}
+
 
 

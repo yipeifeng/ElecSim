@@ -77,7 +77,7 @@ bool EvtMixingAlg::execute(){
 
     SniperPtr<IGlobalTimeSvc> TimeSvcPtr(Task::top(),"GlobalTimeSvc");
     IGlobalTimeSvc* TimeSvc = TimeSvcPtr.data();
-    TTimeStamp Evt_TimeStamp = TimeSvc->get_current_evt_time(evt_time_delta);
+    TTimeStamp Evt_TimeStamp = TimeSvc->set_current_evt_time(evt_time_delta);// add time delta to the old Evt time
 
     LogInfo<<"Evt_TimeStamp: " << Evt_TimeStamp<<endl;
     LogInfo<<"Evt_TimeStamp second: " << Evt_TimeStamp.GetSec()<<endl;
@@ -163,7 +163,7 @@ void EvtMixingAlg::package_new_event(JM::EvtNavigator* Nav, TTimeStamp EvtTimeSt
         int pmtID = hit->getPMTID();
         double hitTime = hit->getHitTime();
 
-        JM::SimPMTHit* sph = New_se->addCDHit();
+        JM::SimPMTHit* sph = New_se->addCDHit(); //add Hit in new SimEvent, we create a Hit in vector and return the pointer
         sph->setPMTID(pmtID);
         sph->setHitTime(hitTime);
 

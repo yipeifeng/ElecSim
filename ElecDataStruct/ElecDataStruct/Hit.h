@@ -16,14 +16,18 @@ class Hit{
             m_EvtTimeStamp(i_EvtTimeStamp),
             m_weight(i_weight)
     {}
+    
+
 
 
     public:
         int pmtID();
-        TimeStamp hitTime();
+        TimeStamp hitTime(); //get global hitTime
+        TimeStamp hitTime() const; //get global hitTime
+
         TimeStamp EvtTimeStamp();
         double weight();
-        double relative_hitTime_ns();
+        double relative_hitTime_ns(); // get relative hitTime 
 
 
 
@@ -34,7 +38,7 @@ class Hit{
     private:
 
         int m_pmtID;
-        TimeStamp m_hitTime;
+        TimeStamp m_hitTime; //global hitTime
         TimeStamp m_EvtTimeStamp;
         double m_weight;
 };

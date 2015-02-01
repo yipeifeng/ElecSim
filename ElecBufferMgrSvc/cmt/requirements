@@ -1,2 +1,21 @@
 package ElecBufferMgrSvc
 
+
+use SniperKernel   v*
+use ROOT v* Externals
+
+use Context v* DataModel
+use ElecDataStruct v*
+
+
+
+
+library ElecBufferMgrSvc *.cc
+
+
+apply_pattern install_more_includes more="ElecBufferMgrSvc"
+
+apply_pattern linker_library library = ElecBufferMgrSvc
+apply_pattern install_python_modules
+
+
