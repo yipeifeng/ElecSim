@@ -20,6 +20,31 @@ def get_parser():
 
 TOTALPMTS = {"Acrylic": 17746, "Balloon": 18306}
 
+
+
+
+def setup_PreTrg(task):
+    #data registrition
+    drs = task.createSvc("DataRegistritionSvc")
+    #buffer service
+    bufMgr=task.createSvc("BufferMemMgr")
+    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #add UnpackingAlg 
+    import PreTrgAlg
+    PreTrg = task.createAlg("PreTrgAlg") 
+
+
+def setup_PMTSim(task):
+    #data registrition
+    drs = task.createSvc("DataRegistritionSvc")
+    #buffer service
+    bufMgr=task.createSvc("BufferMemMgr")
+    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #add UnpackingAlg 
+    import PMTSimAlg
+    PMTSim = task.createAlg("PMTSimAlg") 
+
+
 def setup_unpacking(task):
     #data registrition
     drs = task.createSvc("DataRegistritionSvc")
@@ -102,6 +127,10 @@ if __name__ == "__main__":
     #task_top.setLogLevel(0)
 
 
+
+
+
+
     #add RootRandomSvc
     import RootRandomSvc
     task_top.property("svcs").append("RootRandomSvc")
@@ -128,6 +157,17 @@ if __name__ == "__main__":
     #add ReadOutAlg
     import ReadOutAlg
     readoutAlg = task_top.createAlg("ReadOutAlg")
+
+
+
+    #add PreTrgTask
+    sub_task_PreTrg = task_top.createTask("Task/PreTrgTask")
+    setup_PreTrg(sub_task_PreTrg)
+
+
+    #add PMTSimTask
+    sub_task_PMTSim = task_top.createTask("Task/PMTSimTask")
+    setup_PMTSim(sub_task_PMTSim)
 
 
     #add unpacking task

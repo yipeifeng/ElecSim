@@ -37,7 +37,6 @@ ReadOutAlg::~ReadOutAlg(){
 bool ReadOutAlg::initialize(){
 
     m_evtID=0;
-
     get_Services();
 
     return true;
@@ -47,8 +46,12 @@ bool ReadOutAlg::initialize(){
 bool ReadOutAlg::execute(){
 
     LogInfo<<"begin event: " <<m_evtID<<endl; 
-    put_hit_into_buffer(); //we have loop for put enough hits into buffer
+    get_TriggerTime();
 
+
+
+/*
+    put_hit_into_buffer(); //we have loop for put enough hits into buffer
 
     LogInfo<<"before pop!!"<<endl;
     for(int i=0; i<1000; i++){
@@ -57,11 +60,9 @@ bool ReadOutAlg::execute(){
     }
     
     LogInfo<<"buffer size: "<<BufferSvc->get_HitBuffer().size() <<endl;
-
+*/
 
 //    Incident::fire("UnpackingTask");
-
-
     m_evtID++;
     return true;
 }
@@ -86,18 +87,14 @@ bool ReadOutAlg::get_Services(){
 
 
 
-
-
-
-
-
+    return true;
 }
 
 
 bool ReadOutAlg::put_hit_into_buffer(){
 
     TTimeStamp Evt_TimeStamp = TimeSvc->get_current_evt_time();
-    TimeStamp m_Evt_TimeStamp(Evt_TimeStamp.GetSec(),Evt_TimeStamp.GetNanoSec());
+    TimeStamp m_Evt_TimeStamp(Evt_TimeStamp.GetSec(),Evt_TimeStamp.GetNanoSec());//convert TTimeStamp to TimeStamp
 
 
     TimeStamp firstHitTime(0); //create variable to save firstHitTime
@@ -143,9 +140,34 @@ bool ReadOutAlg::put_hit_into_buffer(){
 
     }
 
-
-
+    return true;
 }
+
+
+
+bool ReadOutAlg::get_TriggerTime(){
+
+    m_TriggerBuffer = BufferSvc->get_TriggerBuffer();
+
+    if(m_TriggerBuffer.size() == 0){
+        LogInfo<<"Trigger Buffer size is 0" <<endl;
+
+        LogInfo<<"Incident::fire PreTrgTask"<<endl;
+        Incident::fire("PreTrgTask");
+
+    }
+
+
+
+
+    return true;
+}
+
+
+
+
+
+
 
 
 

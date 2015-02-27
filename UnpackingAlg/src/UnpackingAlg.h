@@ -4,6 +4,7 @@
 #include "EvtNavigator/NavBuffer.h"
 #include "Context/TimeStamp.h"
 #include "ElecBufferMgrSvc/IElecBufferMgrSvc.h"
+#include "GlobalTimeSvc/IGlobalTimeSvc.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -47,11 +48,7 @@ class UnpackingAlg: public AlgBase
         TTimeStamp m_current_evt_TimeStamp;
 
         IElecBufferMgrSvc* BufferSvc;
-
-
-
-
-
+        IGlobalTimeSvc* TimeSvc; 
 
 };
 

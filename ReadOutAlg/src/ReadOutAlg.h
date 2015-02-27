@@ -32,12 +32,17 @@ class ReadOutAlg: public AlgBase
         bool get_Services();
         bool put_hit_into_buffer();
 
+        bool get_TriggerTime();
+
 
 
     private:
     int m_evtID;
     IElecBufferMgrSvc* BufferSvc;
     IGlobalTimeSvc* TimeSvc;
+
+
+    std::vector<TimeStamp> m_TriggerBuffer;
 
 
 
