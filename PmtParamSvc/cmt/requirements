@@ -1,2 +1,23 @@
 package PmtParamSvc
 
+
+use SniperKernel   v*
+use ROOT v* Externals
+
+
+use Context v* DataModel
+
+library PmtParamSvc *.cc
+
+
+apply_pattern install_more_includes more="PmtParamSvc"
+
+apply_pattern linker_library library = PmtParamSvc
+apply_pattern install_python_modules
+
+
+
+
+
+
+

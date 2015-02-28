@@ -120,6 +120,9 @@ bool UnpackingAlg::put_data_to_HitBuffer(){
 
     TIter next_hit(m_simevent->getCDHits());
 
+
+
+
     while( (hit = (JM::SimPMTHit*)next_hit()) ) {
         int hit_pmtId = hit->getPMTID();
         //cout<<"hit_pmtID: " << hit_pmtId<<endl;
@@ -145,6 +148,18 @@ bool UnpackingAlg::put_data_to_HitBuffer(){
         ++m_nPhotons;
 
     }
+/*
+    for(int i=0; i<3000; i++){
+        TimeStamp m_hitTime(i*1e-9);  //unit s
+        TimeStamp EvtTimeStamp(0);
+        Hit m_hit(i, m_hitTime, EvtTimeStamp, 1);
+        BufferSvc -> save_to_HitBuffer(m_hit);
+        ++m_nPhotons;
+    
+    }
+*/
+
+
     LogInfo<<"nPhotons: " << m_nPhotons<<endl;
     LogInfo<<"hitNum in buffer: "<< ( BufferSvc->get_HitBuffer() ).size()<<endl;
 

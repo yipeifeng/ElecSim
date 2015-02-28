@@ -21,6 +21,7 @@ use InputReviser v* Utilities
 use RootRandomSvc v*
 use GlobalTimeSvc v*
 use ElecDataStruct v*
+use PmtParamSvc v*
 
 
 library PMTSimAlg *.cc

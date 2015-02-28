@@ -98,10 +98,10 @@ if __name__ == "__main__":
                 "input": ["IBD_5.root", "IBD_6.root"]}
             ]
 
-#    samples = [ 
-#            {"name": "IBD_sample",
-#                "rate": 0.01, #Hz 
-#                "input": ["IBD_1.root"]},
+    #    samples = [ 
+#            {"name": "sample_1",
+#                "rate": 1000, #Hz 
+#                "input": ["sample_detsim.root"]},
 #            ]
 
     bufSize = 5.0 #second
@@ -142,13 +142,18 @@ if __name__ == "__main__":
     task_top.property("svcs").append("GlobalTimeSvc")
     time = task_top.find("GlobalTimeSvc")
     time.property("start").set(args.start)
-    
+
 
     #add ElecBufferMgrSvc
     import ElecBufferMgrSvc
     task_top.property("svcs").append("ElecBufferMgrSvc")
     bufferMgr = task_top.find("ElecBufferMgrSvc")
 
+
+    #add PmtParamSvc
+    import PmtParamSvc
+    task_top.property("svcs").append("PmtParamSvc")
+    bufferMgr = task_top.find("PmtParamSvc")
 
 
 

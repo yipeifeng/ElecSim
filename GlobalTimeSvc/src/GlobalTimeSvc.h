@@ -33,15 +33,6 @@ class GlobalTimeSvc: public IGlobalTimeSvc, public SvcBase
 
 
 
-
-
-
-
-
-
-
-
-
     private:
 
         TTimeStamp str2time(std::string str_time);
