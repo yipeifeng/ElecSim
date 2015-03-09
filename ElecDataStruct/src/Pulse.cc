@@ -11,6 +11,12 @@ TimeStamp Pulse::pulseHitTime(){
     return m_pulseHitTime;
 }
 
+
+TimeStamp Pulse::pulseHitTime() const{
+    return m_pulseHitTime;
+}
+
+
 TimeStamp Pulse::EvtTimeStamp(){
     return m_EvtTimeStamp;
 }

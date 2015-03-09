@@ -27,6 +27,8 @@ class Pulse {
 
         double amplitude();
         TimeStamp pulseHitTime();
+        TimeStamp pulseHitTime() const;
+
         TimeStamp EvtTimeStamp();
         int pmtID();
 

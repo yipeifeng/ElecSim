@@ -21,6 +21,15 @@ def get_parser():
 TOTALPMTS = {"Acrylic": 17746, "Balloon": 18306}
 
 
+def setup_WaveSim(task):
+    #data registrition
+    drs = task.createSvc("DataRegistritionSvc")
+    #buffer service
+    bufMgr=task.createSvc("BufferMemMgr")
+    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #add UnpackingAlg 
+    import WaveformSimAlg
+    WaveAlg = task.createAlg("WaveformSimAlg") 
 
 
 def setup_PreTrg(task):
@@ -163,6 +172,12 @@ if __name__ == "__main__":
     import ReadOutAlg
     readoutAlg = task_top.createAlg("ReadOutAlg")
 
+
+
+
+    #add WaveformSimTask
+    sub_task_WaveSim = task_top.createTask("Task/WaveformSimTask")
+    setup_WaveSim(sub_task_WaveSim)
 
 
     #add PreTrgTask

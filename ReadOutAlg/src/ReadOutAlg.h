@@ -34,6 +34,10 @@ class ReadOutAlg: public AlgBase
 
         bool get_TriggerTime();
 
+        void CheckOutWaveform();
+        void ReadOutOneEvent(TimeStamp triggerTime);
+
+        void pop_TriggerTime();
 
 
     private:
@@ -41,8 +45,10 @@ class ReadOutAlg: public AlgBase
     IElecBufferMgrSvc* BufferSvc;
     IGlobalTimeSvc* TimeSvc;
 
+    TimeStamp TriggerTime;
 
-    std::vector<TimeStamp> m_TriggerBuffer;
+
+    std::deque<TimeStamp> m_TriggerBuffer;
 
 
 

@@ -149,6 +149,9 @@ double PmtParamSvc::get_timeOffset(int pmtId){
 }
 
 
+double PmtParamSvc::get_darkRate(int pmtId){
+    return pd_vector[pmtId].darkRate();
+}
 
 
 

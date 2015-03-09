@@ -12,6 +12,7 @@ class IPmtParamSvc{
         virtual double get_afterPulseProb(int pmtId) = 0;
         virtual double get_timeSpread(int pmtId) = 0;
         virtual double get_timeOffset(int pmtId) = 0;
+        virtual double get_darkRate(int pmtId) = 0;
 
 
 

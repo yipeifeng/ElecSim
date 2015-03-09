@@ -46,11 +46,15 @@ class PMTSimAlg: public AlgBase
         bool execute();
         bool finalize();
 
+    private:
+
         void load_Hit();
         void produce_Pulse();
         void clear_vector();
 
         void get_Services();
+
+        void sort_PulseBuffer();
 
 
 
@@ -70,6 +74,13 @@ class PMTSimAlg: public AlgBase
 
 
     private:
+
+        //
+        TimeStamp startTime;
+        TimeStamp endTime;
+        TimeStamp startEvtTimeStamp;
+        double deltaSimTime;
+
 
 
         //Property:

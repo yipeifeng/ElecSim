@@ -39,20 +39,27 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 
         int get_PulseBufferSize();
 
+        void SortPulseBuffer();
 
 
 
 
 
-        std::vector<TimeStamp>& get_TriggerBuffer();
+//Trigger Buffer
+        std::deque<TimeStamp>& get_TriggerBuffer();
+        void save_to_TriggerBuffer(TimeStamp TriggerTime);
 
+        TimeStamp get_TriggerTimeStamp();//return the first TriggerTime .
 
+        void pop_TriggerTimeStamp(); //
+        
+        
 
 
     private:
         std::deque<Hit> HitBuffer;
         std::deque<Pulse> PulseBuffer;
-        std::vector<TimeStamp> TriggerBuffer;
+        std::deque<TimeStamp> TriggerBuffer;
 
 
 

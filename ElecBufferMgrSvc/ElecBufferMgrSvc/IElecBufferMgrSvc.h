@@ -11,7 +11,9 @@ class IElecBufferMgrSvc{
 
     public:
         virtual ~IElecBufferMgrSvc() = 0;
-        
+
+//Hit Buffer        
+
         virtual void save_to_HitBuffer(Hit hit) = 0; 
         virtual std::deque<Hit>& get_HitBuffer() =0;
         virtual void SortHitBuffer() = 0;
@@ -23,10 +25,19 @@ class IElecBufferMgrSvc{
         virtual std::vector<Hit> get_HitVector(double TimeLength) = 0;
 
 
+//Trigger Buffer
 
-        virtual std::vector<TimeStamp>& get_TriggerBuffer() = 0;//get trigger buffer
+        virtual std::deque<TimeStamp>& get_TriggerBuffer() = 0;//get trigger buffer
 
-//Pulse Buffer
+        virtual void save_to_TriggerBuffer(TimeStamp TriggerTime) = 0;
+
+
+        virtual TimeStamp get_TriggerTimeStamp() = 0;
+
+        virtual void pop_TriggerTimeStamp() = 0;
+
+
+        //Pulse Buffer
 
         virtual std::deque<Pulse>& get_PulseBuffer() = 0;
         virtual TimeStamp get_firstPulseTime() = 0;
@@ -34,6 +45,8 @@ class IElecBufferMgrSvc{
         virtual void save_to_PulseBuffer(Pulse pulse) = 0;
 
         virtual int get_PulseBufferSize() = 0;
+
+        virtual void SortPulseBuffer() = 0;
 
 };
 

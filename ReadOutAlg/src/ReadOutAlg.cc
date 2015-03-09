@@ -48,21 +48,13 @@ bool ReadOutAlg::execute(){
     LogInfo<<"begin event: " <<m_evtID<<endl; 
     get_TriggerTime();
 
+    CheckOutWaveform();
+
+    pop_TriggerTime(); 
 
 
-/*
-    put_hit_into_buffer(); //we have loop for put enough hits into buffer
 
-    LogInfo<<"before pop!!"<<endl;
-    for(int i=0; i<1000; i++){
-        BufferSvc->get_HitBuffer().pop_front(); 
-    
-    }
-    
-    LogInfo<<"buffer size: "<<BufferSvc->get_HitBuffer().size() <<endl;
-*/
 
-//    Incident::fire("UnpackingTask");
     m_evtID++;
     return true;
 }
@@ -149,19 +141,54 @@ bool ReadOutAlg::get_TriggerTime(){
 
     m_TriggerBuffer = BufferSvc->get_TriggerBuffer();
 
+    LogInfo<<"Trigger Buffer size: " << m_TriggerBuffer.size()<<endl;
+
     if(m_TriggerBuffer.size() == 0){
-        LogInfo<<"Trigger Buffer size is 0" <<endl;
+        LogInfo<<"Trigger Buffer size is 0, do PreTrgTask" <<endl;
 
         LogInfo<<"Incident::fire PreTrgTask"<<endl;
         Incident::fire("PreTrgTask");
 
     }
+    
+    
+   TriggerTime = BufferSvc->get_TriggerTimeStamp();  
 
-
+   LogInfo<<"TriggerTime: "  << TriggerTime.GetSeconds()*1e9<<endl;
 
 
     return true;
 }
+
+
+
+void ReadOutAlg::CheckOutWaveform(){
+
+   // bool Waveform_is_enough = BufferSvc->WaveformBufferEnough(TriggerTime, ReadOutLength);
+
+
+    bool Waveform_is_enough = false;
+
+    if(Waveform_is_enough == false){
+    
+    
+        LogInfo<<"Incident::fire WaveformSimTask"<<endl;
+        Incident::fire("WaveformSimTask");
+    
+    }
+
+
+}
+
+
+
+void ReadOutAlg::pop_TriggerTime(){
+    BufferSvc->pop_TriggerTimeStamp();
+}
+
+
+
+
 
 
 

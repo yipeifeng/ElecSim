@@ -28,7 +28,7 @@ DECLARE_ALGORITHM(PreTrgAlg);
 
 
 PreTrgAlg::PreTrgAlg(const string& name):AlgBase(name){
-    declProp("PulseBufferLength",m_PulseBufferLength=2000);
+    declProp("PulseBufferLength",m_PulseBufferLength=2000);//unit ns
 
 }
 
@@ -77,12 +77,14 @@ bool PreTrgAlg::find_Trg_from_PulseBuffer(){
 
     int m_PulseBufferSize = BufferSvc->get_PulseBufferSize();
 
+    //LogInfo<<"m_PulseBufferSize: " <<m_PulseBufferSize<<endl;
     TimeStamp delta_PulseTimeStamp(0);
 
     if(m_PulseBufferSize >= 2){
         TimeStamp firstPulseTime = BufferSvc->get_firstPulseTime();
 
         TimeStamp lastPulseTime = BufferSvc->get_lastPulseTime();
+
 
         delta_PulseTimeStamp = lastPulseTime - firstPulseTime;
     }
@@ -100,16 +102,22 @@ bool PreTrgAlg::find_Trg_from_PulseBuffer(){
         if(m_PulseBufferSize >= 2){
             TimeStamp firstPulseTime = BufferSvc->get_firstPulseTime();
 
+            LogInfo<<"firstPulseTime: " <<firstPulseTime<<endl;
+
             TimeStamp lastPulseTime = BufferSvc->get_lastPulseTime();
+
+            LogInfo<<"lastPulseTime: "<<lastPulseTime<<endl;
 
             delta_PulseTimeStamp = lastPulseTime - firstPulseTime;
             LogInfo<<"delta_PulseTimeStamp: " << delta_PulseTimeStamp.GetSeconds()*1e9<<endl;
         }
-
-
-
     }
 
+    //get Trigger TimeStamp
+
+    TimeStamp TriggerTime = BufferSvc->get_firstPulseTime(); //for sample test, use firstPulseTime as TriggerTime
+
+    BufferSvc->save_to_TriggerBuffer(TriggerTime);
 
 
 

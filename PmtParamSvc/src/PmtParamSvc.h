@@ -85,6 +85,7 @@ class PmtParamSvc: public IPmtParamSvc, public SvcBase
         double get_afterPulseProb(int pmtId);
         double get_timeSpread(int pmtId);
         double get_timeOffset(int pmtId);
+        double get_darkRate(int pmtId);
 
 
 

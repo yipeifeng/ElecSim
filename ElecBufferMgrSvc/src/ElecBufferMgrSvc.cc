@@ -14,6 +14,9 @@ bool SortByHitTime(const Hit& hit1,const Hit& hit2){
     return hit1.hitTime()<hit2.hitTime(); 
 }
 
+bool SortByPulseTime(const Pulse& pulse1,const Pulse& pulse2){
+    return pulse1.pulseHitTime()<pulse2.pulseHitTime();
+}
 
 
 
@@ -99,12 +102,17 @@ std::vector<Hit> ElecBufferMgrSvc::get_HitVector(double TimeLength){
     TimeStamp delta_temHitTime(0);
 
     while(delta_temHitTime.GetSeconds()*1e9 < TimeLength && HitBuffer.size() != 0){
+
+        //LogInfo<<"Hit Time: " << HitBuffer.front().hitTime()<<endl;
+
         tem_HitVector.push_back(HitBuffer.front());
         HitBuffer.pop_front();
 
         delta_temHitTime = HitBuffer.front().hitTime() - tem_firstHitTime;
+        //LogInfo<<"delta_temHitTime(ns): " << delta_temHitTime.GetSeconds()*1e9<<endl;
 
     }
+    LogInfo<<"delta_temHitTime: " << delta_temHitTime.GetSeconds()*1e9<<endl;
 
     LogInfo<<"HitBuffer size after get_HitVector:" <<HitBuffer.size()<<endl;
 
@@ -154,16 +162,50 @@ int ElecBufferMgrSvc::get_PulseBufferSize(){
 }
 
 
+void ElecBufferMgrSvc::SortPulseBuffer(){
+
+    sort(PulseBuffer.begin(),PulseBuffer.end(), SortByPulseTime);
+
+ //   deque<Pulse>::iterator it;
+ //   for(it = PulseBuffer.begin();
+ //           it != PulseBuffer.end();
+ //           it++){
+ //       LogInfo<<"PulseHitTime: "  << it->pulseHitTime().GetSeconds() * 1e9<<endl;
+ //   
+ //   
+ //   }
+
+
+}
+
 
 
 
 
 //Trigger Buffer
 
-vector<TimeStamp>& ElecBufferMgrSvc::get_TriggerBuffer(){
+deque<TimeStamp>& ElecBufferMgrSvc::get_TriggerBuffer(){
     return TriggerBuffer;
 }
 
+void ElecBufferMgrSvc::save_to_TriggerBuffer(TimeStamp TriggerTime){
+    TriggerBuffer.push_back(TriggerTime);
+
+}
+
+
+
+TimeStamp ElecBufferMgrSvc::get_TriggerTimeStamp(){
+    TimeStamp TriggerTimeStamp =  TriggerBuffer.front();
+    //TriggerBuffer.pop_front();
+    return TriggerTimeStamp;
+}
+
+
+
+void ElecBufferMgrSvc::pop_TriggerTimeStamp(){
+    TriggerBuffer.pop_front();
+}
 
 
 
