@@ -73,7 +73,9 @@ bool PreTrgAlg::finalize(){
 
 bool PreTrgAlg::find_Trg_from_PulseBuffer(){
 
-    //    deque<Pulse>& m_PulseBuffer = BufferSvc->get_PulseBuffer();
+    //when I find Trg, first I make sure there are enough Pulse in the Buffer .
+
+
 
     int m_PulseBufferSize = BufferSvc->get_PulseBufferSize();
 
@@ -89,6 +91,7 @@ bool PreTrgAlg::find_Trg_from_PulseBuffer(){
         delta_PulseTimeStamp = lastPulseTime - firstPulseTime;
     }
 
+    LogInfo<<"delta_PulseTimeStamp(ns): " << delta_PulseTimeStamp.GetSeconds()*1e9<<endl;
 
     while(delta_PulseTimeStamp.GetSeconds() * 1e9 < m_PulseBufferLength){
         LogInfo<<"PulseBuffer don't have enough Pulse , Incident::fire PmtSimTask"<<endl;
@@ -102,14 +105,14 @@ bool PreTrgAlg::find_Trg_from_PulseBuffer(){
         if(m_PulseBufferSize >= 2){
             TimeStamp firstPulseTime = BufferSvc->get_firstPulseTime();
 
-            LogInfo<<"firstPulseTime: " <<firstPulseTime<<endl;
+            LogInfo<<"firstPulseTime(ns): " <<firstPulseTime.GetSeconds()*1e9<<endl;
 
             TimeStamp lastPulseTime = BufferSvc->get_lastPulseTime();
 
-            LogInfo<<"lastPulseTime: "<<lastPulseTime<<endl;
+            LogInfo<<"lastPulseTime(ns): "<<lastPulseTime.GetSeconds()*1e9<<endl;
 
             delta_PulseTimeStamp = lastPulseTime - firstPulseTime;
-            LogInfo<<"delta_PulseTimeStamp: " << delta_PulseTimeStamp.GetSeconds()*1e9<<endl;
+            LogInfo<<"delta_PulseTimeStamp(ns): " << delta_PulseTimeStamp.GetSeconds()*1e9<<endl;
         }
     }
 

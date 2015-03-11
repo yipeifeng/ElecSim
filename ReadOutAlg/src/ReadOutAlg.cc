@@ -50,7 +50,7 @@ bool ReadOutAlg::execute(){
 
     CheckOutWaveform();
 
-    pop_TriggerTime(); 
+    pop_TriggerTime();//every evt, use one TriggerTime and pop it 
 
 
 
@@ -172,7 +172,7 @@ void ReadOutAlg::CheckOutWaveform(){
     if(Waveform_is_enough == false){
     
     
-        LogInfo<<"Incident::fire WaveformSimTask"<<endl;
+        LogInfo<<"Waveform isn't enough, Incident::fire WaveformSimTask"<<endl;
         Incident::fire("WaveformSimTask");
     
     }

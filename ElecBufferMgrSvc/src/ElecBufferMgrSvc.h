@@ -41,6 +41,9 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 
         void SortPulseBuffer();
 
+        void pop_PulseBufferFront();
+
+        std::vector<Pulse> get_PulseVector(TimeStamp WaveSimLastTime);
 
 
 

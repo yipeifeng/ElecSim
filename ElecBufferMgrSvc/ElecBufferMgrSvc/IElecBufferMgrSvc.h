@@ -48,6 +48,11 @@ class IElecBufferMgrSvc{
 
         virtual void SortPulseBuffer() = 0;
 
+        virtual void pop_PulseBufferFront() = 0;
+
+        virtual std::vector<Pulse> get_PulseVector(TimeStamp WaveSimLastTime) = 0;
+
+
 };
 
 

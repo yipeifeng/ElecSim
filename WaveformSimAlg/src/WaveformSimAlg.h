@@ -30,6 +30,9 @@ class WaveformSimAlg: public AlgBase
 
     private:
         void get_Services();
+        void clear_vector();
+        void load_Pulse();
+
 
 
 
@@ -44,6 +47,9 @@ class WaveformSimAlg: public AlgBase
         IGlobalTimeSvc* TimeSvc; 
 
         std::vector<Pulse> pulse_vector;
+
+        double m_preWaveSimWindow;
+        double m_postWaveSimWindow;
 
         
 

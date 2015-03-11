@@ -112,7 +112,7 @@ std::vector<Hit> ElecBufferMgrSvc::get_HitVector(double TimeLength){
         //LogInfo<<"delta_temHitTime(ns): " << delta_temHitTime.GetSeconds()*1e9<<endl;
 
     }
-    LogInfo<<"delta_temHitTime: " << delta_temHitTime.GetSeconds()*1e9<<endl;
+    LogInfo<<"delta_temHitTime(ns): " << delta_temHitTime.GetSeconds()*1e9<<endl;
 
     LogInfo<<"HitBuffer size after get_HitVector:" <<HitBuffer.size()<<endl;
 
@@ -180,6 +180,34 @@ void ElecBufferMgrSvc::SortPulseBuffer(){
 
 
 
+vector<Pulse> ElecBufferMgrSvc::get_PulseVector(TimeStamp WaveSimLastTime){
+
+    vector<Pulse> tem_PulseVector;
+    TimeStamp tem_firstPulseTime = PulseBuffer.front().pulseHitTime();
+    LogInfo<<"tem_firstPulseTime(ns): "<<tem_firstPulseTime.GetSeconds()*1e9<<endl;
+
+    while(tem_firstPulseTime < WaveSimLastTime){
+        tem_PulseVector.push_back(PulseBuffer.front() ); 
+        PulseBuffer.pop_front();
+
+        tem_firstPulseTime = PulseBuffer.front().pulseHitTime();
+
+        LogInfo<<"tem_firstPulseTime(ns): "<<tem_firstPulseTime.GetSeconds()*1e9<<endl;
+
+    }
+    LogInfo<<"tem_PulseVector size: " <<tem_PulseVector.size()<<endl;
+
+    return tem_PulseVector;
+}
+
+
+
+
+
+
+
+
+
 
 
 //Trigger Buffer
@@ -205,6 +233,11 @@ TimeStamp ElecBufferMgrSvc::get_TriggerTimeStamp(){
 
 void ElecBufferMgrSvc::pop_TriggerTimeStamp(){
     TriggerBuffer.pop_front();
+}
+
+
+void ElecBufferMgrSvc::pop_PulseBufferFront(){
+    PulseBuffer.pop_front();
 }
 
 

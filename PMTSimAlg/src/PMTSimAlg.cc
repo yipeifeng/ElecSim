@@ -92,7 +92,7 @@ bool PMTSimAlg::initialize(){
 bool PMTSimAlg::execute(){
     LogInfo<<"execute PMTSim" <<endl;
 
-    clear_vector();
+    clear_vector(); // clear temp hit_vector
     load_Hit();
     produce_Pulse();
     sort_PulseBuffer();
@@ -205,7 +205,7 @@ void PMTSimAlg::produce_Pulse(){
 
     deltaSimTime = delta_Time.GetSeconds();//unit s (convert ns to s)
     //LogInfo<<"startTime: " <<startTime<<endl;
-    LogInfo<<"deltaSimTime: " << deltaSimTime<<endl;
+    LogInfo<<"deltaSimTime(ns): " << deltaSimTime*1e9<<endl;
 
     for (hvIter=hit_vector.begin(); hvIter != hvDone; ++hvIter) {
 
