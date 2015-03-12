@@ -20,6 +20,16 @@ bool SortByPulseTime(const Pulse& pulse1,const Pulse& pulse2){
 
 
 
+ChannelData::ChannelData(){
+    BufferSize = 30000;    
+
+}
+
+ChannelData::~ChannelData(){
+
+}
+
+
 ElecBufferMgrSvc::ElecBufferMgrSvc(const std::string& name) : SvcBase(name) 
 {
 
@@ -192,7 +202,7 @@ vector<Pulse> ElecBufferMgrSvc::get_PulseVector(TimeStamp WaveSimLastTime){
 
         tem_firstPulseTime = PulseBuffer.front().pulseHitTime();
 
-        LogInfo<<"tem_firstPulseTime(ns): "<<tem_firstPulseTime.GetSeconds()*1e9<<endl;
+        //LogInfo<<"tem_firstPulseTime(ns): "<<tem_firstPulseTime.GetSeconds()*1e9<<endl;
 
     }
     LogInfo<<"tem_PulseVector size: " <<tem_PulseVector.size()<<endl;

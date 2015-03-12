@@ -9,6 +9,32 @@
 #include <deque>
 #include <vector>
 
+//class for channel data class
+
+class ChannelData{
+
+    public:
+        ChannelData();
+        ~ChannelData();
+
+
+    private:
+
+    std::vector<double> ChannelBuffer;
+
+    int BufferSize; //I initialize it to 30000 in the constrcutor
+
+
+};
+
+
+
+
+
+
+
+
+
 class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 {
     public:
@@ -58,11 +84,21 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
         
         
 
+//Waveform Buffer
+
+
+
 
     private:
         std::deque<Hit> HitBuffer;
         std::deque<Pulse> PulseBuffer;
         std::deque<TimeStamp> TriggerBuffer;
+
+
+//Waveform Buffer
+
+        std::map<int, ChannelData> WaveformBuffer;
+
 
 
 
