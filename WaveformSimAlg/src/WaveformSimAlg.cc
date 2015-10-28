@@ -27,10 +27,14 @@ DECLARE_ALGORITHM(WaveformSimAlg);
 
 WaveformSimAlg::WaveformSimAlg(const string& name):AlgBase(name){
 
-    declProp("preWaveSimWindow",m_preWaveSimWindow=200); //unit ns
+    declProp("preWaveSimWindow",m_preWaveSimWindow=200); //unit ns , this timeWindow decide which Pulse will be put into pulse_vector
     declProp("postWaveSimWindow",m_postWaveSimWindow=800);
 
 ////////////////
+
+    declProp("preTimeTolerance", m_preTimeTolerance=100); //unit ns
+
+    declProp("postTimeTolerance", m_postTimeTolerance=900);
 
     declProp("PulseSampleWith", m_PulseSampleWith=150);  //unit ns, the time window for one Ideal pulse waveform with
     declProp("enableOvershoot", m_enableOvershoot=false);
@@ -45,6 +49,9 @@ WaveformSimAlg::WaveformSimAlg(const string& name):AlgBase(name){
 
     m_linearityThreshold = 20;
 
+    m_pulseCountSlotWidth = 10; //unit ns
+    m_gainFactor = 1.0; //Mean PMT gain (in units of 10^7) 
+    m_pulseCountWindow = 1; // Number of counted slots before and after a pulse
 
 
 
@@ -123,8 +130,8 @@ void WaveformSimAlg::load_Pulse(){
 
     TimeStamp WaveSimLastTime(0);
     WaveSimLastTime = TriggerTime;
-    WaveSimLastTime.Add(m_preWaveSimWindow*1e-9);
-    WaveSimLastTime.Add(m_postWaveSimWindow*1e-9); //for tolerance, the WaveSimLastTime = TriggerTime + m_preWaveSimWindow + m_postWaveSimWindow; the lastPulseTime must greater than the WaveSimLastTime.
+//    WaveSimLastTime.Add(m_preWaveSimWindow*1e-9);
+    WaveSimLastTime.Add(m_postWaveSimWindow*1e-9); //the lastPulseTime must greater than the WaveSimLastTime.
 
 
     LogInfo<<"WaveSimLastTime: " <<WaveSimLastTime.GetSeconds()*1e9<<endl;
@@ -132,8 +139,8 @@ void WaveformSimAlg::load_Pulse(){
 
 
 
-    while(lastPulseTime < WaveSimLastTime){
-        LogInfo<<"the lastPulseTime < WaveSimLastTime, Incident::fire PMTSimTask" <<endl;
+    while(WaveSimLastTime > lastPulseTime){
+        LogInfo<<"the WaveSimLastTime > lastPulseTime, Incident::fire PMTSimTask" <<endl;
 
         Incident::fire("PMTSimTask");
         lastPulseTime = BufferSvc->get_lastPulseTime();
@@ -173,7 +180,25 @@ void WaveformSimAlg::load_Pulse(){
 
 void WaveformSimAlg::produce_Waveform(){
 
-    LogInfo<<"produce_Waveform!! to do" <<endl;
+    LogInfo<<"produce_Waveform!! " <<endl;
+
+    m_simTimeEarliest = pulse_vector.front().pulseHitTime();
+    m_simTimeEarliest.Subtract(m_preTimeTolerance*1e-9);
+
+    m_simTimeLatest = pulse_vector.back().pulseHitTime();
+    m_simTimeLatest.Add(m_postTimeTolerance*1e-9);
+
+    simTime = (m_simTimeLatest - m_simTimeEarliest).GetSeconds()*1e9;  //unit ns
+
+
+
+    LogInfo<<"first pulse time: " << pulse_vector.front().pulseHitTime().GetSeconds()*1e9<<endl;
+    LogInfo<<"m_simTimeEarliest: " << m_simTimeEarliest.GetSeconds()*1e9<<endl;
+
+    LogInfo<<"last pulse time: " << pulse_vector.back().pulseHitTime().GetSeconds()*1e9<<endl;
+    LogInfo<<"m_simTimeLatest: " << m_simTimeLatest.GetSeconds()*1e9<<endl;
+    LogInfo<<"simTime: " << simTime<<endl;
+
     
     // Organize Pulses by Channel(pmtID)
     map<int, vector<Pulse> > pulseMap;
@@ -190,7 +215,7 @@ void WaveformSimAlg::produce_Waveform(){
 
     }
 
-
+    BufferSvc->set_standard_TimeStamp(m_simTimeLatest); //roll the waveform buffer standard index
 
 }
 
@@ -317,10 +342,178 @@ void WaveformSimAlg::mapPulsesByChannel(vector<Pulse>& pulse_vector,
 
 void WaveformSimAlg::generateOneChannel(int channelId, vector<Pulse>& channelPulses){
 
-    //LogInfo<<"channelId: " << channelId <<"  Pulse Num: " << channelPulses.size()<<endl;
+    // The number of samples in time given the simulation frequency
+    int simSamples = int(simTime * 1e-9 * m_simFrequency);
+
+
+    // Prepare Raw Signal
+    if(m_rawSignal.size() != simSamples) m_rawSignal.resize( simSamples );
+
+    double* rawStart = &m_rawSignal[0];
+
+    for( unsigned int sigIdx = 0; sigIdx!=simSamples; sigIdx++){
+        *(rawStart + sigIdx) = 0;
+    } 
+
+
+    // Add noise to raw signal if requested
+    if( m_enableNoise ){
+        for(unsigned int index=0; index < simSamples; index++){
+            *(rawStart + index) += noise();
+        }
+    }
+
+
+
+    int channelPulsesN = channelPulses.size();
+
+    if( channelPulsesN > 0 ){
+        // Prepare time slots for pulse counting
+        int numPulseTimeSlots = int(simTime
+                /m_pulseCountSlotWidth) + 1;
+
+        std::vector<int> pulseTimeSlots(numPulseTimeSlots);
+
+
+        // Fill pulse count time slots
+        // Count the number of pulses for each time slot to model nonlinearity
+        for (int i = 0; i < numPulseTimeSlots; i++ ){ 
+            pulseTimeSlots[i] = 0;
+        }
+
+        std::vector<Pulse>::iterator pulseIter, pulseDone = channelPulses.end();
+
+        for(pulseIter=channelPulses.begin(); pulseIter != pulseDone; ++pulseIter){
+            int timeSlot = int(  (pulseIter->pulseHitTime() - m_simTimeEarliest).GetSeconds()*1e9 
+                    / m_pulseCountSlotWidth );
+
+
+
+            int pulseNo = int(pulseIter->amplitude()+0.5);
+            if(timeSlot>=numPulseTimeSlots) continue;
+            pulseTimeSlots[timeSlot]+=pulseNo;
+        }
+
+        double* pmtPulseStart = &m_pmtPulse[0];
+        double* overshootStart = &m_overshoot[0];
+
+        int nPulseSamples = m_pmtPulse.size();
+        int nOvershootSamples = m_overshoot.size();
+
+
+        // Loop over pulses, add each to raw signal
+        for(pulseIter=channelPulses.begin(); pulseIter != pulseDone; ++pulseIter){
+
+            int tOffset = int(  (pulseIter->pulseHitTime() - m_simTimeEarliest).GetSeconds() * m_simFrequency  );
+
+            float amplitude = pulseIter->amplitude() * m_speAmp * m_gainFactor;
+            unsigned int nPulse=0;
+            unsigned int nCoincPulse=0;
+            float satAmp = amplitude;
+            float satCharge = amplitude;
+
+            // Count the total number of pulses within a nearby time window
+            // This number is used to determine the nonlinearity
+            if(channelPulsesN>5){
+
+                int timeSlot = int(  (pulseIter->pulseHitTime() - m_simTimeEarliest).GetSeconds()*1e9
+                        / m_pulseCountSlotWidth);
+
+                nCoincPulse = pulseTimeSlots[timeSlot];
+
+                for (int iSlot = timeSlot - m_pulseCountWindow; 
+                        iSlot <= timeSlot + m_pulseCountWindow; iSlot++){
+                    if(iSlot>=0 && iSlot<numPulseTimeSlots) 
+                        nPulse += pulseTimeSlots[iSlot];
+                }
+                // Get saturated amplitudes
+                satAmp *= ampSatFactor(nPulse);
+                satCharge *= chargeSatFactor(nPulse);
+            }else{
+                nCoincPulse =1;
+                nPulse = 1;
+            }
+
+            unsigned int nSamples = int(3.5 * nPulseSamples);
+
+
+            // Now add pulses to the raw and shaped signal
+            for(unsigned int index = 0; index < nSamples; index++){
+                unsigned int sampleIdx = tOffset + index;
+                double idxTime = index * (1. / m_simFrequency);
+                if(sampleIdx>0 && sampleIdx<simSamples){
+                    if(index<nPulseSamples) {
+                        if(nPulse>m_linearityThreshold){
+                            *(rawStart + sampleIdx) -= satAmp * pmtPulse(idxTime, nPulse);
+                        }  else
+
+                            *(rawStart + sampleIdx) -= satCharge * (*(pmtPulseStart + index));
+
+                    }
+                    // Add overshoot
+                    if(m_enableOvershoot && nCoincPulse < 6){
+                        *(rawStart + sampleIdx) -= satCharge * (*(overshootStart+index));
+
+                    }
+                }
+            }
+
+        }// end loop pulse
+
+    }
+
+
+
+    vector<double>::iterator sig_it ;
+    TimeStamp index_stamp = m_simTimeEarliest;
+
+    for(sig_it = m_rawSignal.begin();
+            sig_it != m_rawSignal.end(); 
+            sig_it++){
+        
+            BufferSvc->save_waveform(channelId, index_stamp, *sig_it); 
+        
+
+            index_stamp.Add(1*1e-9); 
+    }
 
 
 }
+
+
+
+double WaveformSimAlg::noise(){
+    // Simple noise model
+    // Approximate Gaussian-distributed noise
+    return gRandom->Gaus(0,1) * m_noiseAmp; // no offset
+
+}
+
+
+double WaveformSimAlg::ampSatFactor(int nPulse){
+    double q = double(nPulse);
+    double qSat = 533.98;
+    double a = 2.884;
+    return saturationModel(q, qSat, a);
+
+}
+
+
+double WaveformSimAlg::chargeSatFactor(int nPulse){
+    double q = double(nPulse);
+    double qSat = 939.77;
+    double a = 2.113;
+    return saturationModel(q, qSat, a);
+}
+
+
+double WaveformSimAlg::saturationModel(double q, double qSat, double a){
+    if(q<1) return 1;
+    double num = pow(1 + 8*pow(q/qSat,a),0.5) - 1;
+    double denom = 4* pow(q/qSat,a);
+    return pow(num/denom,0.5);
+}
+
 
 
 

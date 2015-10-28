@@ -80,7 +80,7 @@ bool PreTrgAlg::find_Trg_from_PulseBuffer(){
     int m_PulseBufferSize = BufferSvc->get_PulseBufferSize();
 
     //LogInfo<<"m_PulseBufferSize: " <<m_PulseBufferSize<<endl;
-    TimeStamp delta_PulseTimeStamp(0);
+    TimeStamp delta_PulseTimeStamp(0);   //I set the initial delta_PulseTimeStamp = 0, if the m_PulseBufferSize < 2, the delta_PulseTimeStamp = 0.
 
     if(m_PulseBufferSize >= 2){
         TimeStamp firstPulseTime = BufferSvc->get_firstPulseTime();

@@ -65,11 +65,20 @@ class WaveformSimAlg: public AlgBase
         double m_preWaveSimWindow;
         double m_postWaveSimWindow;
 
+        double m_preTimeTolerance;
+        double m_postTimeTolerance;
+
+        TimeStamp m_simTimeEarliest; //the waveform begin time
+        TimeStamp m_simTimeLatest;
+        double simTime;
+
+
 
         bool m_enableOvershoot;
         bool m_enableSatuation;
         bool m_enableNoise;
 
+        double m_gainFactor;
         double m_simFrequency;
         double m_noiseAmp;
         double m_speAmp;
@@ -80,11 +89,35 @@ class WaveformSimAlg: public AlgBase
 
         int m_PmtTotal;
 
+
+        double m_pulseCountSlotWidth;
+        // Number of counted slots before and after the pulse.
+        int m_pulseCountWindow;
+        // Voltage amplitude of noise.
+
+
+
+
+
         // Ideal PMT pulse shape.
         std::vector<double> m_pmtPulse;
         // Ideal overshoot shape
         std::vector<double> m_overshoot;
 
+
+        std::vector<double> m_rawSignal;
+
+
+
+    private:
+
+        double noise();
+
+        double ampSatFactor(int nPulse);
+
+        double chargeSatFactor(int nPulse);
+
+        double saturationModel(double q, double qSat, double a);
 
 
 

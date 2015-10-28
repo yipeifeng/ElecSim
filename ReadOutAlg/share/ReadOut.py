@@ -7,7 +7,7 @@ import Sniper
 def get_parser():
     import argparse
     parser = argparse.ArgumentParser(description='Run Simulation.')
-    parser.add_argument("--evtmax", type=int, default=3, help='events to be processed')
+    parser.add_argument("--evtmax", type=int, default=10, help='events to be processed')
     parser.add_argument("--seed", type=int, default=5, help='seed')
     parser.add_argument("--start", default="1970-01-01 08:00:00", help='starting time')#year, month, day, h, min, s; don't chang the format
     parser.add_argument("--end", default="2014-09-01 12:05:00", help='ending time')#year, month, day, h, min, s
@@ -92,6 +92,7 @@ if __name__ == "__main__":
     import RootIOSvc
 
     Sniper.setLogLevel(3)
+    #Sniper.setLogLevel(6)
     parser = get_parser()
     args = parser.parse_args()
 

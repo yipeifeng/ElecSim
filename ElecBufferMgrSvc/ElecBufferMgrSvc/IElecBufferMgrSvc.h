@@ -53,6 +53,12 @@ class IElecBufferMgrSvc{
         virtual std::vector<Pulse> get_PulseVector(TimeStamp WaveSimLastTime) = 0;
 
 
+        //Waveform Buffer
+
+        virtual void save_waveform(int channelId, TimeStamp index_stamp, double amplitude) = 0;
+
+        virtual void set_standard_TimeStamp(TimeStamp time) = 0;
+
 };
 
 

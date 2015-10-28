@@ -19,9 +19,17 @@ bool SortByPulseTime(const Pulse& pulse1,const Pulse& pulse2){
 }
 
 
-
 ChannelData::ChannelData(){
-    BufferSize = 30000;    
+
+    m_ChannelBuffer.resize(30000, 0 );//initial Buffer 
+
+}
+
+
+
+ChannelData::ChannelData(int BufferSize){
+
+    m_ChannelBuffer.resize(BufferSize, 1 );//initial Buffer 
 
 }
 
@@ -32,6 +40,12 @@ ChannelData::~ChannelData(){
 
 ElecBufferMgrSvc::ElecBufferMgrSvc(const std::string& name) : SvcBase(name) 
 {
+    TimeStamp temp_stamp(0);
+    declProp("PmtTotal",m_PmtTotal=17746);
+    declProp("WaveformBufferSize",m_WaveformBufferSize=30000);  
+    declProp("start",standard_TimeStamp = temp_stamp);
+
+    standard_Index = 0;
 
 }
 
@@ -50,6 +64,17 @@ bool ElecBufferMgrSvc::initialize(){
 
     TriggerBuffer.clear();
     LogInfo<<"clear the TriggerBuffer!"<<endl;
+    WaveformBuffer.clear();
+    LogInfo<<"clear the WaveformBuffer!"<<endl;
+
+    init_WavefromBuffer(m_PmtTotal);
+    LogInfo<<"initialize the WaveformBuffer!"<<endl;
+
+
+
+
+
+
 
     return true;
 }
@@ -176,14 +201,14 @@ void ElecBufferMgrSvc::SortPulseBuffer(){
 
     sort(PulseBuffer.begin(),PulseBuffer.end(), SortByPulseTime);
 
- //   deque<Pulse>::iterator it;
- //   for(it = PulseBuffer.begin();
- //           it != PulseBuffer.end();
- //           it++){
- //       LogInfo<<"PulseHitTime: "  << it->pulseHitTime().GetSeconds() * 1e9<<endl;
- //   
- //   
- //   }
+    //   deque<Pulse>::iterator it;
+    //   for(it = PulseBuffer.begin();
+    //           it != PulseBuffer.end();
+    //           it++){
+    //       LogInfo<<"PulseHitTime: "  << it->pulseHitTime().GetSeconds() * 1e9<<endl;
+    //   
+    //   
+    //   }
 
 
 }
@@ -194,7 +219,11 @@ vector<Pulse> ElecBufferMgrSvc::get_PulseVector(TimeStamp WaveSimLastTime){
 
     vector<Pulse> tem_PulseVector;
     TimeStamp tem_firstPulseTime = PulseBuffer.front().pulseHitTime();
+
+
     LogInfo<<"tem_firstPulseTime(ns): "<<tem_firstPulseTime.GetSeconds()*1e9<<endl;
+
+    //before this step,I have cleared the pulse before WaveSimfirstTime
 
     while(tem_firstPulseTime < WaveSimLastTime){
         tem_PulseVector.push_back(PulseBuffer.front() ); 
@@ -249,6 +278,108 @@ void ElecBufferMgrSvc::pop_TriggerTimeStamp(){
 void ElecBufferMgrSvc::pop_PulseBufferFront(){
     PulseBuffer.pop_front();
 }
+
+
+
+
+
+//Waveform Buffer
+
+void ElecBufferMgrSvc::init_WavefromBuffer(int PmtTotal){
+
+    LogInfo<<"WaveBuffer PMT num before init: "<<WaveformBuffer.size()<<endl;
+
+    ChannelData m_ChannelData(m_WaveformBufferSize); //Set Buffer size
+
+    for(int i=0; i<PmtTotal; i++){
+        WaveformBuffer[i] = m_ChannelData; 
+    }
+
+    LogInfo<<"WaveBuffer PMT num after init: "<<WaveformBuffer.size()<<endl;
+
+    /*
+       LogInfo<<"WaveformBuffer[100] ChannelBufferSize: " << WaveformBuffer[100].ChannelBuffer().size()<<endl;
+
+
+       TimeStamp standard_TimeStamp(47*1e-9);
+       LogInfo<<"standard_TimeStamp: " << standard_TimeStamp.GetSeconds()*1e9<<endl;
+
+       int standard_Index = 4;
+
+       for(int i=40; i<50; i++){
+       TimeStamp ValueTime(i*1e-9);
+       double ValueAmp = i;
+       WaveformBuffer[100].save_value(m_WaveformBufferSize, standard_TimeStamp, standard_Index, ValueTime, ValueAmp); 
+
+       }
+       for(int i=0; i<10; i++){
+       LogInfo<<WaveformBuffer[100].ChannelBuffer()[i] << endl;
+
+       }
+       */
+
+
+}
+
+
+void ElecBufferMgrSvc::save_waveform(int channelId, TimeStamp index_stamp, double amplitude){
+
+       WaveformBuffer[channelId].save_value(m_WaveformBufferSize, standard_TimeStamp, standard_Index, index_stamp, amplitude); 
+
+}
+
+
+
+void ElecBufferMgrSvc::set_standard_TimeStamp(TimeStamp time){
+
+    if(time > standard_TimeStamp){
+
+        standard_Index += int( (time - standard_TimeStamp).GetSeconds()*1e9 );
+
+        standard_TimeStamp = time;
+    }
+
+};
+
+
+
+
+
+
+
+// ChannelData
+vector<double>& ChannelData::ChannelBuffer(){
+    return m_ChannelBuffer;
+}
+
+
+
+void ChannelData::save_value(int BufferSize, TimeStamp standard_TimeStamp, int  standard_Index, TimeStamp ValueTime, double ValueAmp){
+
+    double i_standardTime = standard_TimeStamp.GetSeconds()*1e9; 
+    double i_ValueTime = ValueTime.GetSeconds()*1e9; //unit ns
+
+    int buffer_index = int(i_ValueTime - i_standardTime + standard_Index) % BufferSize;
+
+    if(buffer_index < 0){
+        buffer_index+=BufferSize; 
+    }
+
+
+    //LogInfo<<"ValueTime: " <<i_ValueTime<<endl;
+    //LogInfo<<"BufferSize: " << BufferSize<<endl;
+    //LogInfo<<"buffer_index: " <<buffer_index<<endl;
+
+    if(ValueTime <= standard_TimeStamp){
+        m_ChannelBuffer[buffer_index]+=ValueAmp;
+    }else{
+        m_ChannelBuffer[buffer_index]=ValueAmp;
+
+    }
+
+}
+
+
 
 
 

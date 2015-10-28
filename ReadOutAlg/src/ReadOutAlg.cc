@@ -47,10 +47,10 @@ bool ReadOutAlg::execute(){
 
     LogInfo<<"begin event: " <<m_evtID<<endl; 
     get_TriggerTime();
-
-    CheckOutWaveform();
-
-    pop_TriggerTime();//every evt, use one TriggerTime and pop it 
+//
+//    CheckOutWaveform();
+//
+//    pop_TriggerTime();//every evt, use one TriggerTime and pop it 
 
 
 

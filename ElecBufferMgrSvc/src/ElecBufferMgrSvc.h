@@ -15,14 +15,16 @@ class ChannelData{
 
     public:
         ChannelData();
+        ChannelData(int BufferSize);
         ~ChannelData();
+
+        std::vector<double>& ChannelBuffer();
+        void save_value(int BufferSize, TimeStamp standard_TimeStamp, int  standard_Index, TimeStamp ValueTime, double ValueAmp);
 
 
     private:
 
-    std::vector<double> ChannelBuffer;
-
-    int BufferSize; //I initialize it to 30000 in the constrcutor
+    std::vector<double> m_ChannelBuffer;
 
 
 };
@@ -86,10 +88,20 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 
 //Waveform Buffer
 
+        void save_waveform(int channelId, TimeStamp index_stamp, double amplitude);
+        void set_standard_TimeStamp(TimeStamp time);
 
 
 
     private:
+        int m_PmtTotal;
+        int m_WaveformBufferSize;
+
+        TimeStamp standard_TimeStamp;
+        int standard_Index;
+
+
+
         std::deque<Hit> HitBuffer;
         std::deque<Pulse> PulseBuffer;
         std::deque<TimeStamp> TriggerBuffer;
@@ -99,6 +111,13 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 
         std::map<int, ChannelData> WaveformBuffer;
 
+
+
+        void init_WavefromBuffer(int PmtTotal);
+    
+    
+
+    
 
 
 
