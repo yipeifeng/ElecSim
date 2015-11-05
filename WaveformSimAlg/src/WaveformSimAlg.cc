@@ -8,6 +8,7 @@
 #include "Event/SimHeader.h"
 #include "Event/SimEvent.h"
 #include "Event/SimPMTHit.h"
+#include "Event/ElecHeader.h"
 #include <time.h>
 #include <TMath.h>
 #include <TRandom.h>
@@ -201,7 +202,17 @@ void WaveformSimAlg::produce_Waveform(){
     LogInfo<<"m_simTimeLatest: " << m_simTimeLatest.GetSeconds()*1e9<<endl;
     LogInfo<<"simTime: " << simTime<<endl;
 
-    
+    //get crate
+
+    JM::ElecFeeCrate* crate = BufferSvc->get_crate();
+
+
+
+
+
+
+
+
     // Organize Pulses by Channel(pmtID)
     map<int, vector<Pulse> > pulseMap;
     mapPulsesByChannel(pulse_vector, pulseMap);
@@ -472,11 +483,11 @@ void WaveformSimAlg::generateOneChannel(int channelId, vector<Pulse>& channelPul
     for(sig_it = m_rawSignal.begin();
             sig_it != m_rawSignal.end(); 
             sig_it++){
-        
-            BufferSvc->save_waveform(channelId, index_stamp, *sig_it); 
-        
 
-            index_stamp.Add(1*1e-9); 
+        BufferSvc->save_waveform(channelId, index_stamp, *sig_it); 
+
+
+        index_stamp.Add(1*1e-9); 
     }
 
 

@@ -47,7 +47,6 @@ bool ReadOutAlg::execute(){
 
     LogInfo<<"begin event: " <<m_evtID<<endl; 
     get_TriggerTime();
-    create_output_crate();
     produce_waveform_and_output_event();
 
 //    CheckOutWaveform();
@@ -202,11 +201,6 @@ void ReadOutAlg::pop_TriggerTime(){
 }
 
 
-void ReadOutAlg::create_output_crate(){
-
-    BufferSve->create_output_crate();
-
-}
 
 
 

@@ -3,6 +3,7 @@
 #include "ElecDataStruct/Hit.h"
 #include "ElecDataStruct/Pulse.h"
 #include "Context/TimeStamp.h"
+#include "Event/ElecHeader.h"
 #include <deque>
 
 
@@ -58,6 +59,12 @@ class IElecBufferMgrSvc{
         virtual void save_waveform(int channelId, TimeStamp index_stamp, double amplitude) = 0;
 
         virtual void set_standard_TimeStamp(TimeStamp time) = 0;
+
+
+//output crate
+    
+        virtual JM::ElecFeeCrate* get_crate() = 0 ;
+
 
 };
 
