@@ -143,6 +143,7 @@ void WaveformSimAlg::load_Pulse(){
         LogInfo<<"the WaveSimLastTime > lastPulseTime, Incident::fire PMTSimTask" <<endl;
 
         Incident::fire("PMTSimTask");
+        LogInfo<<"Error, if endless loop!!" <<endl;
         lastPulseTime = BufferSvc->get_lastPulseTime();
         LogInfo<<"lastPulseTime: " << lastPulseTime.GetSeconds()*1e9<<endl;
 
@@ -172,6 +173,7 @@ void WaveformSimAlg::load_Pulse(){
     //get pulse_vector for WaveFormSim
     
     pulse_vector = BufferSvc->get_PulseVector(WaveSimLastTime);
+    LogInfo<<"pulse vector size for waveform sim: " << pulse_vector.size()<<endl;
 
 
 }
@@ -215,7 +217,7 @@ void WaveformSimAlg::produce_Waveform(){
 
     }
 
-    BufferSvc->set_standard_TimeStamp(m_simTimeLatest); //roll the waveform buffer standard index
+    //BufferSvc->set_standard_TimeStamp(m_simTimeLatest); //roll the waveform buffer standard index
 
 }
 

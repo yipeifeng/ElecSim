@@ -6,6 +6,13 @@
 #include "ElecDataStruct/Hit.h"
 #include "ElecDataStruct/Pulse.h"
 #include "Context/TimeStamp.h"
+#include "Event/SimHeader.h"
+#include "Event/ElecHeader.h"
+//#include "EvtNavigator/NavBuffer.h"
+//#include "BufferMemMgr/IDataMemMgr.h"
+//#include "DataRegistritionSvc/DataRegistritionSvc.h"
+//#include "Identifier/CdID.h"
+
 #include <deque>
 #include <vector>
 
@@ -93,6 +100,12 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 
 
 
+//output crate
+
+        JM::ElecFeeCrate* get_crate(); 
+
+
+
     private:
         int m_PmtTotal;
         int m_WaveformBufferSize;
@@ -107,18 +120,17 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
         std::deque<TimeStamp> TriggerBuffer;
 
 
-//Waveform Buffer
+        //Waveform Buffer
 
         std::map<int, ChannelData> WaveformBuffer;
 
 
 
         void init_WavefromBuffer(int PmtTotal);
-    
-    
 
-    
 
+        //output crate
+        JM::ElecFeeCrate *m_crate;
 
 
 };

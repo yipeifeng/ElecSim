@@ -67,16 +67,15 @@ bool ElecBufferMgrSvc::initialize(){
     WaveformBuffer.clear();
     LogInfo<<"clear the WaveformBuffer!"<<endl;
 
-    init_WavefromBuffer(m_PmtTotal);
-    LogInfo<<"initialize the WaveformBuffer!"<<endl;
+    //init_WavefromBuffer(m_PmtTotal);
+    //LogInfo<<"initialize the WaveformBuffer!"<<endl;
+
+    m_crate = new JM::ElecFeeCrate;
+    LogInfo<<"create crate for output!" <<endl;
 
 
 
-
-
-
-
-    return true;
+        return true;
 }
 
 
@@ -324,7 +323,7 @@ void ElecBufferMgrSvc::init_WavefromBuffer(int PmtTotal){
 
 void ElecBufferMgrSvc::save_waveform(int channelId, TimeStamp index_stamp, double amplitude){
 
-       WaveformBuffer[channelId].save_value(m_WaveformBufferSize, standard_TimeStamp, standard_Index, index_stamp, amplitude); 
+    WaveformBuffer[channelId].save_value(m_WaveformBufferSize, standard_TimeStamp, standard_Index, index_stamp, amplitude); 
 
 }
 
@@ -379,8 +378,11 @@ void ChannelData::save_value(int BufferSize, TimeStamp standard_TimeStamp, int  
 
 }
 
+//output crate
 
-
+JM::ElecFeeCrate* ElecBufferMgrSvc::get_crate(){
+    return m_crate; 
+}
 
 
 

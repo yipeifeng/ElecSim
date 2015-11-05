@@ -7,6 +7,12 @@ use ROOT v* Externals
 use Context v* DataModel
 use ElecDataStruct v*
 
+use EvtNavigator v* DataModel
+use SimEventV2   v* DataModel
+use ElecEvent    v* DataModel
+use DataRegistritionSvc v* DataModel
+
+use Identifier v* Detector
 
 
 

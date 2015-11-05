@@ -34,6 +34,7 @@ class ReadOutAlg: public AlgBase
 
         bool get_TriggerTime();
         void produce_waveform_and_output_event();
+        void create_output_crate();
 
         void CheckOutWaveform();
         void ReadOutOneEvent(TimeStamp triggerTime);

@@ -47,6 +47,7 @@ bool ReadOutAlg::execute(){
 
     LogInfo<<"begin event: " <<m_evtID<<endl; 
     get_TriggerTime();
+    create_output_crate();
     produce_waveform_and_output_event();
 
 //    CheckOutWaveform();
@@ -163,11 +164,11 @@ bool ReadOutAlg::get_TriggerTime(){
 
 void ReadOutAlg::produce_waveform_and_output_event(){
 
+    if(m_TriggerBuffer.size() != 0){
 
-
-
-
-
+        LogInfo<<"we have TriggerTime, Incident::fire WaveformSimAlg" <<endl;
+        Incident::fire("WaveformSimTask");
+    }
 
 }
 
@@ -201,7 +202,11 @@ void ReadOutAlg::pop_TriggerTime(){
 }
 
 
+void ReadOutAlg::create_output_crate(){
 
+    BufferSve->create_output_crate();
+
+}
 
 
 
