@@ -72,7 +72,7 @@ bool EvtMixingAlg::execute(){
 
     LogInfo<<"evt time delta(s): " << delta<<endl;
 
-    TimeStamp delta_temp(delta);
+    TimeStamp delta_temp(delta);  //use double delta to create a TimeStamp, the construction function, unit s
     TTimeStamp evt_time_delta(delta_temp.GetSec(), delta_temp.GetNanoSec() ); //TimeStamp class provide  more functions,but Sniper use TTimeStamp class, so need convert.
 
     SniperPtr<IGlobalTimeSvc> TimeSvcPtr(Task::top(),"GlobalTimeSvc");
@@ -145,59 +145,41 @@ JM::EvtNavigator* EvtMixingAlg::get_one_event(){
 
 void EvtMixingAlg::package_new_event(JM::EvtNavigator* Nav, TTimeStamp EvtTimeStamp){
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
-
     JM::HeaderObject* sh=Nav->getHeader("/Event/SimEvent"); 
-
-    LogInfo<<__LINE__<<"OK!" <<endl;
 
     if( sh==0 ){
         LogError<<"failed to get header! "<<endl;
     }
-    LogInfo<<__LINE__<<"OK!" <<endl;
     
     LogDebug<< "have got header! "<< endl;
     JM::SimEvent* se=dynamic_cast<JM::SimEvent*>(sh->event()); 
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     TIter next(se->getCDHits());//root's iterator
     JM::SimPMTHit* hit = 0;
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     JM::SimEvent* New_se = new JM::SimEvent;//create a new SimEvent to save data
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     while( hit=(JM::SimPMTHit*)next() ){
         int pmtID = hit->getPMTID();
         double hitTime = hit->getHitTime();
-    LogInfo<<__LINE__<<"OK!" <<endl;
         JM::SimPMTHit* sph = New_se->addCDHit(); //add Hit in new SimEvent, we create a Hit in vector and return the pointer
 
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
         sph->setPMTID(pmtID);
         sph->setHitTime(hitTime);
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     }
-
-    LogInfo<<__LINE__<<"OK!" <<endl;
 
     JM::SimHeader* New_sh = new JM::SimHeader;
     New_sh->setEvent(New_se);
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     JM::EvtNavigator* navigator = new JM::EvtNavigator();
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     navigator->setTimeStamp(EvtTimeStamp);  //Sniper require TTimeStamp, but we use TimeStamp. So need to convert. We use TimeStamp because TimeStamp provide some useful function.
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
     navigator->addHeader("/Event/SimEvent",New_sh);
-    LogInfo<<__LINE__<<"OK!" <<endl;
     m_memMgr_top->adopt( navigator, "/Event"); //put this event object to sniper buffer
 
-    LogInfo<<__LINE__<<"OK!" <<endl;
 }
 
 

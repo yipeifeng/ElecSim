@@ -47,7 +47,8 @@ bool ReadOutAlg::execute(){
 
     LogInfo<<"begin event: " <<m_evtID<<endl; 
     get_TriggerTime();
-//
+    produce_waveform_and_output_event();
+
 //    CheckOutWaveform();
 //
 //    pop_TriggerTime();//every evt, use one TriggerTime and pop it 
@@ -159,6 +160,19 @@ bool ReadOutAlg::get_TriggerTime(){
 
     return true;
 }
+
+void ReadOutAlg::produce_waveform_and_output_event(){
+
+
+
+
+
+
+
+}
+
+
+
 
 
 

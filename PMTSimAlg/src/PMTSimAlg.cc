@@ -26,8 +26,8 @@ DECLARE_ALGORITHM(PMTSimAlg);
 
 PMTSimAlg::PMTSimAlg(const string& name):AlgBase(name){
 
-    declProp("HitBufferLength",m_HitBufferLength=2000);//unit ns
-    declProp("HitVectorLength",m_HitVectorLength=500); //unit ns
+    declProp("HitBufferLength",m_HitBufferLength=3500);//unit ns
+    declProp("HitVectorLength",m_HitVectorLength=3000); //unit ns
 
 
 
@@ -119,11 +119,33 @@ void PMTSimAlg::load_Hit(){
 
     LogInfo<<"load_Hit!" <<endl;
 
-    ////////If Hit buffer doesn't have enough Hit, I incdent::fire UnpackingTask to get more Hits.
+    ////////If Hit buffer doesn't have enough Hit and current_evt_time < Stamp, I incdent::fire UnpackingTask to get more Hits. 
 
     int m_HitBufferSize = BufferSvc->get_HitBufferSize();
 
+    TTimeStamp TTimeStamp_current_evt_time(0);
+    TimeStamp current_evt_time(0);
+
+    TTimeStamp_current_evt_time = TimeSvc->get_current_evt_time();
+
+    TimeStamp Temp_time(TTimeStamp_current_evt_time.GetSec(), TTimeStamp_current_evt_time.GetNanoSec() ); //change TTimeStamp to TimeStamp, TimeStamp has more funciton, but sniper use TTimeStamp, and root use it. 
+
+    current_evt_time = Temp_time;
+
+    LogInfo<<"current evt time: " << current_evt_time<<endl;
+
+    TimeStamp HitTime_Stamp(0) ; //If current_evt_time < HitTime Stamp, we need unpack event and put hit in buffer. HitTime_Stamp = firstHitTime + 2000ns(can change).
+    TimeStamp HitTimeStamp_length(m_HitBufferLength * 1e-9);  //we use the HitBufferLength as the evt time judgement length.
     TimeStamp delta_HitTimeStamp(0);
+
+    if(m_HitBufferSize < 2){
+        TimeStamp all_evt_start_time = TimeSvc->get_start_time(); //for the first time, no hit in vector,so we use all event start time.
+        HitTime_Stamp = all_evt_start_time + HitTimeStamp_length;
+        //TimeStamp test(4000*1e-9);
+        //HitTime_Stamp = all_evt_start_time + test;
+
+
+    }
 
     if(m_HitBufferSize >= 2){
         TimeStamp firstHitTime = BufferSvc->get_firstHitTime();
@@ -131,12 +153,17 @@ void PMTSimAlg::load_Hit(){
         TimeStamp lastHitTime = BufferSvc->get_lastHitTime();
 
         delta_HitTimeStamp = lastHitTime - firstHitTime;
+
+        HitTime_Stamp = firstHitTime + HitTimeStamp_length; 
     }
+
+    LogInfo<<"HitTime_Stamp for put evt: " << HitTime_Stamp<<endl;
 
     LogInfo<<"delta_HitTimeStamp(ns): " << delta_HitTimeStamp.GetSeconds() * 1e9<<endl;
 
 
-    while(delta_HitTimeStamp.GetSeconds() * 1e9 < m_HitBufferLength){
+
+    while(delta_HitTimeStamp.GetSeconds() * 1e9 < m_HitBufferLength || current_evt_time < HitTime_Stamp){
         LogInfo<<"HitBuffer doesn't have enough Hit , Incident::fire UnpackingTask"<<endl;
 
         Incident::fire("UnpackingTask");
@@ -144,6 +171,12 @@ void PMTSimAlg::load_Hit(){
         m_HitBufferSize = BufferSvc->get_HitBufferSize();
 
         LogInfo<<"HitBuffer size: "<<m_HitBufferSize<<endl;
+
+        TTimeStamp_current_evt_time = TimeSvc->get_current_evt_time();
+        TimeStamp Temp_time(TTimeStamp_current_evt_time.GetSec(), TTimeStamp_current_evt_time.GetNanoSec() ); //change TTimeStamp to TimeStamp, TimeStamp has more funciton, but sniper use TTimeStamp, and root use it. 
+        current_evt_time = Temp_time;
+
+        LogInfo<<"current evt time: " << current_evt_time<<endl;
 
         if(m_HitBufferSize >= 2){
             TimeStamp firstHitTime = BufferSvc->get_firstHitTime();
@@ -153,11 +186,14 @@ void PMTSimAlg::load_Hit(){
             delta_HitTimeStamp = lastHitTime - firstHitTime;
             LogInfo<<"delta_HitTimeStamp(ns): " << delta_HitTimeStamp.GetSeconds()*1e9<<endl;
         }
+
     }
 
+
+
+
+
     ///////// get hit_vector to convert to pulse
-
-
 
     hit_vector = BufferSvc -> get_HitVector(m_HitVectorLength);
     LogInfo<<"temp hit_vector size: " << hit_vector.size()<<endl;
