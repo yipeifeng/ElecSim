@@ -5,6 +5,7 @@
 #include "Context/TimeStamp.h"
 #include "ElecBufferMgrSvc/IElecBufferMgrSvc.h"
 #include "GlobalTimeSvc/IGlobalTimeSvc.h"
+#include "Event/ElecHeader.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -39,7 +40,9 @@ class WaveformSimAlg: public AlgBase
             std::map<int, std::vector<Pulse> >& pulseMap);
 
         void generateOneChannel(int channelId,
-                std::vector<Pulse>& channelPulses);
+                std::vector<Pulse>& channelPulses,
+                JM::ElecFeeChannel& channel 
+                );
 
 
     private:
@@ -86,6 +89,9 @@ class WaveformSimAlg: public AlgBase
         double m_mu;
         double m_linearityThreshold;
         double m_PulseSampleWith;
+        bool m_enableFADC;
+        double m_FadcBit;
+        double m_FadcRange;
 
         int m_PmtTotal;
 
@@ -120,7 +126,7 @@ class WaveformSimAlg: public AlgBase
         double saturationModel(double q, double qSat, double a);
 
 
-
+        int FADC_sample(double adc_range, double amp_val, double FadcBit);
 
 
 };

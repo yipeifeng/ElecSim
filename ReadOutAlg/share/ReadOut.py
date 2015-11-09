@@ -7,7 +7,7 @@ import Sniper
 def get_parser():
     import argparse
     parser = argparse.ArgumentParser(description='Run Simulation.')
-    parser.add_argument("--evtmax", type=int, default=10, help='events to be processed')
+    parser.add_argument("--evtmax", type=int, default=5, help='events to be processed')
     parser.add_argument("--seed", type=int, default=5, help='seed')
     parser.add_argument("--start", default="1970-01-01 08:00:00", help='starting time')#year, month, day, h, min, s; don't chang the format
     parser.add_argument("--end", default="2014-09-01 12:05:00", help='ending time')#year, month, day, h, min, s
@@ -26,7 +26,7 @@ def setup_WaveSim(task):
     drs = task.createSvc("DataRegistritionSvc")
     #buffer service
     bufMgr=task.createSvc("BufferMemMgr")
-    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #bufMgr.property("TimeWindow").set([-1.0,1.0])
     #add UnpackingAlg 
     import WaveformSimAlg
     WaveAlg = task.createAlg("WaveformSimAlg") 
@@ -37,7 +37,7 @@ def setup_PreTrg(task):
     drs = task.createSvc("DataRegistritionSvc")
     #buffer service
     bufMgr=task.createSvc("BufferMemMgr")
-    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #bufMgr.property("TimeWindow").set([-1.0,1.0])
     #add UnpackingAlg 
     import PreTrgAlg
     PreTrg = task.createAlg("PreTrgAlg") 
@@ -48,7 +48,7 @@ def setup_PMTSim(task):
     drs = task.createSvc("DataRegistritionSvc")
     #buffer service
     bufMgr=task.createSvc("BufferMemMgr")
-    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #bufMgr.property("TimeWindow").set([-1.0,1.0])
     #add UnpackingAlg 
     import PMTSimAlg
     PMTSim = task.createAlg("PMTSimAlg") 
@@ -59,7 +59,7 @@ def setup_unpacking(task):
     drs = task.createSvc("DataRegistritionSvc")
     #buffer service
     bufMgr=task.createSvc("BufferMemMgr")
-    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #bufMgr.property("TimeWindow").set([-1.0,1.0])
     #add UnpackingAlg 
     import UnpackingAlg
     Unpack = task.createAlg("UnpackingAlg") 
@@ -69,7 +69,7 @@ def setup_EvtMixing(task):
     drs = task.createSvc("DataRegistritionSvc")
     #buffer service
     bufMgr=task.createSvc("BufferMemMgr")
-    bufMgr.property("TimeWindow").set([-1.0,1.0])
+    #bufMgr.property("TimeWindow").set([-1.0,1.0])
     #add EvtMixingAlg
     import EvtMixingAlg
     mixAlg=task.createAlg("EvtMixingAlg")
@@ -172,6 +172,7 @@ if __name__ == "__main__":
     #add ReadOutAlg
     import ReadOutAlg
     readoutAlg = task_top.createAlg("ReadOutAlg")
+    bufMgr=task_top.createSvc("BufferMemMgr")
 
 
 
@@ -214,6 +215,19 @@ if __name__ == "__main__":
         readin[i].property("InputFile").set(inputList[i])
         bufMgrTmp=subTask[i].createSvc("BufferMemMgr")
         bufMgrTmp.property("TimeWindow").set([-1.0,1.0])
+
+    #output
+    task_top.createSvc("DataRegistritionSvc")
+    roSvc = task_top.createSvc("RootOutputSvc/OutputSvc")
+    if args.output != "":        #if not assign output file name,there is no output file
+        outputdata = {"/Event/ElecEvent": args.output}
+        roSvc.property("OutputStreams").set(outputdata)
+
+    #draw waveform
+    Sniper.loadDll("libElecSimV2.so")
+    draw_waveform=task_top.createAlg("TestBuffDataAlg")
+
+
 
 
 

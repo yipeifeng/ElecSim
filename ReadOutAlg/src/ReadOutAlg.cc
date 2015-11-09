@@ -39,6 +39,14 @@ bool ReadOutAlg::initialize(){
     m_evtID=0;
     get_Services();
 
+    SniperPtr<DataRegistritionSvc> drsSvc(getScope(), "DataRegistritionSvc");
+    if ( drsSvc.invalid() ) {
+            LogError << "Failed to get DataRegistritionSvc!" << std::endl;
+                throw SniperException("Make sure you have load the DataRegistritionSvc.");
+    }
+    // FIXME: Why we need register Data???
+    drsSvc->registerData("JM::ElecEvent", "/Event/ElecEvent");
+
     return true;
 }
 
@@ -47,11 +55,17 @@ bool ReadOutAlg::execute(){
 
     LogInfo<<"begin event: " <<m_evtID<<endl; 
     get_TriggerTime();
-    produce_waveform_and_output_event();
+    create_new_crate();
+
+    produce_waveform();
+    ReadOutOneEvent();
+
+    delete_crate();
+    
 
 //    CheckOutWaveform();
 //
-//    pop_TriggerTime();//every evt, use one TriggerTime and pop it 
+    pop_TriggerTime();//every evt, use one TriggerTime and pop it 
 
 
 
@@ -155,13 +169,18 @@ bool ReadOutAlg::get_TriggerTime(){
     
    TriggerTime = BufferSvc->get_TriggerTimeStamp();  
 
+   m_TriggerBuffer = BufferSvc->get_TriggerBuffer();
+   LogInfo<<"trigger buffer size: " << m_TriggerBuffer.size()<<endl;
    LogInfo<<"TriggerTime: "  << TriggerTime.GetSeconds()*1e9<<endl;
 
 
     return true;
 }
 
-void ReadOutAlg::produce_waveform_and_output_event(){
+void ReadOutAlg::produce_waveform(){
+
+    m_TriggerBuffer = BufferSvc->get_TriggerBuffer();
+    LogInfo<<"trigger buffer size: " << m_TriggerBuffer.size()<<endl;
 
     if(m_TriggerBuffer.size() != 0){
 
@@ -178,17 +197,17 @@ void ReadOutAlg::produce_waveform_and_output_event(){
 
 void ReadOutAlg::CheckOutWaveform(){
 
-   // bool Waveform_is_enough = BufferSvc->WaveformBufferEnough(TriggerTime, ReadOutLength);
+    // bool Waveform_is_enough = BufferSvc->WaveformBufferEnough(TriggerTime, ReadOutLength);
 
 
     bool Waveform_is_enough = false;
 
     if(Waveform_is_enough == false){
-    
-    
+
+
         LogInfo<<"Waveform isn't enough, Incident::fire WaveformSimTask"<<endl;
         Incident::fire("WaveformSimTask");
-    
+
     }
 
 
@@ -201,9 +220,41 @@ void ReadOutAlg::pop_TriggerTime(){
 }
 
 
+void ReadOutAlg::ReadOutOneEvent(){
+
+    JM::ElecFeeCrate* m_crate = BufferSvc->get_crate();
+
+    JM::EvtNavigator* nav = new JM::EvtNavigator();
+    static TTimeStamp time(2014, 7, 29, 10, 10, 2, 111);
+    time.Add(TTimeStamp(0, 10000));
+    nav->setTimeStamp(time);
+
+    SniperPtr<IDataMemMgr> mMgr(getScope(), "BufferMemMgr");
+    mMgr->adopt(nav, "/Event");
+
+    JM::ElecHeader* elec_hdr = new JM::ElecHeader;
+    JM::ElecEvent * elec_evt = new JM::ElecEvent;
+
+    elec_evt->setElecFeeCrate(*m_crate);
+    //FIXME: because the Data Model don't use pointer in
+    // current version, it will copy the whole data.
+    // After copy the data, we should remove the original one.
+    // set the relation
+    elec_hdr -> setEvent(elec_evt);
+    nav->addHeader("/Event/ElecEvent", elec_hdr);
+    
+}
 
 
+void ReadOutAlg::create_new_crate(){
+    LogInfo<<"create new crate!" <<endl;
+    BufferSvc->create_new_crate();
 
+}
+
+void ReadOutAlg::delete_crate(){
+    BufferSvc->delete_crate();
+}
 
 
 

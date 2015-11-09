@@ -103,6 +103,8 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 //output crate
 
         JM::ElecFeeCrate* get_crate(); 
+        void create_new_crate();
+        void delete_crate();
 
 
 

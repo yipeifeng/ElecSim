@@ -33,11 +33,15 @@ class ReadOutAlg: public AlgBase
         bool put_hit_into_buffer();
 
         bool get_TriggerTime();
-        void produce_waveform_and_output_event();
-        void create_output_crate();
+        void produce_waveform();
 
         void CheckOutWaveform();
-        void ReadOutOneEvent(TimeStamp triggerTime);
+        //void ReadOutOneEvent(TimeStamp triggerTime);
+        
+        void create_new_crate();
+        void delete_crate();
+
+        void ReadOutOneEvent();
 
         void pop_TriggerTime();
 

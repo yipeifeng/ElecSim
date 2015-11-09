@@ -70,10 +70,6 @@ bool ElecBufferMgrSvc::initialize(){
     //init_WavefromBuffer(m_PmtTotal);
     //LogInfo<<"initialize the WaveformBuffer!"<<endl;
 
-    m_crate = new JM::ElecFeeCrate;
-    LogInfo<<"create crate for output!" <<endl;
-
-
 
         return true;
 }
@@ -382,6 +378,16 @@ void ChannelData::save_value(int BufferSize, TimeStamp standard_TimeStamp, int  
 
 JM::ElecFeeCrate* ElecBufferMgrSvc::get_crate(){
     return m_crate; 
+}
+
+void ElecBufferMgrSvc::create_new_crate(){
+
+    m_crate = new JM::ElecFeeCrate; 
+
+}
+
+void ElecBufferMgrSvc::delete_crate(){
+    delete m_crate;
 }
 
 

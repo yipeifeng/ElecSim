@@ -48,6 +48,12 @@ WaveformSimAlg::WaveformSimAlg(const string& name):AlgBase(name){
     declProp("waveform_width", m_width=14e-9);
     declProp("waveform_mu", m_mu=0.45);
 
+    declProp("enableFADC", m_enableFADC=false);
+    declProp("FadcRange", m_FadcRange=1);//unit: the number of pe.
+    declProp("FadcBit", m_FadcBit=14);
+
+
+
     m_linearityThreshold = 20;
 
     m_pulseCountSlotWidth = 10; //unit ns
@@ -204,9 +210,20 @@ void WaveformSimAlg::produce_Waveform(){
 
     //get crate
 
+
     JM::ElecFeeCrate* crate = BufferSvc->get_crate();
 
 
+    if(crate->channelData().size() == 0){
+
+        for(int pmtIdx = 0; pmtIdx < m_PmtTotal; pmtIdx++){
+
+            crate->channelData()[pmtIdx];
+        } 
+
+    }else{
+        LogInfo << "does not initialize crate" << std::endl;
+    }
 
 
 
@@ -217,11 +234,14 @@ void WaveformSimAlg::produce_Waveform(){
     map<int, vector<Pulse> > pulseMap;
     mapPulsesByChannel(pulse_vector, pulseMap);
 
+    const map<int,JM::ElecFeeChannel>& channelData = crate->channelData();
 
     for(int channelId=0; channelId<m_PmtTotal; channelId++){
 
+        JM::ElecFeeChannel& channel = crate->channelData()[channelId];
+
         if(pulseMap[channelId].size() > 0){
-            generateOneChannel(channelId, pulseMap[channelId]); 
+            generateOneChannel(channelId, pulseMap[channelId], channel); 
         }
 
 
@@ -353,7 +373,7 @@ void WaveformSimAlg::mapPulsesByChannel(vector<Pulse>& pulse_vector,
 
 
 
-void WaveformSimAlg::generateOneChannel(int channelId, vector<Pulse>& channelPulses){
+void WaveformSimAlg::generateOneChannel(int channelId, vector<Pulse>& channelPulses, JM::ElecFeeChannel& channel){
 
     // The number of samples in time given the simulation frequency
     int simSamples = int(simTime * 1e-9 * m_simFrequency);
@@ -475,19 +495,42 @@ void WaveformSimAlg::generateOneChannel(int channelId, vector<Pulse>& channelPul
 
     }
 
-
-
     vector<double>::iterator sig_it ;
-    TimeStamp index_stamp = m_simTimeEarliest;
 
+// for waveform buffer method
+
+//    TimeStamp index_stamp = m_simTimeEarliest;
+//
+//    for(sig_it = m_rawSignal.begin();
+//            sig_it != m_rawSignal.end(); 
+//            sig_it++){
+//
+//        BufferSvc->save_waveform(channelId, index_stamp, *sig_it); 
+//
+//
+//        index_stamp.Add(1*1e-9); 
+//    }
+
+
+    //  add raw_waveform to channel
+    int m_tdc_temp = 0;
     for(sig_it = m_rawSignal.begin();
             sig_it != m_rawSignal.end(); 
             sig_it++){
+        if(*sig_it!=0){
+            //cout<<"adc: " << *sig_it<<endl;
 
-        BufferSvc->save_waveform(channelId, index_stamp, *sig_it); 
+            if(m_enableFADC){
 
+                channel.adc().push_back( FADC_sample(m_FadcRange*m_speAmp, *sig_it, m_FadcBit) ); 
 
-        index_stamp.Add(1*1e-9); 
+            }else{
+                channel.adc().push_back(*sig_it); 
+            }
+
+            channel.tdc().push_back(m_tdc_temp); 
+        }
+        m_tdc_temp++;
     }
 
 
@@ -528,6 +571,15 @@ double WaveformSimAlg::saturationModel(double q, double qSat, double a){
 }
 
 
+int WaveformSimAlg::FADC_sample(double adc_range, double amp_val, double FadcBit){
+    // double adc_range = 1; //unit v
+    double LSB = adc_range/TMath::Power(2,FadcBit);
+    
+    int amp_adc = int(amp_val/LSB);  
+
+    return amp_adc;
+
+}
 
 
 

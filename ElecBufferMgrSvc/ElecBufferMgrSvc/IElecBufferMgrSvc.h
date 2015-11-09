@@ -64,6 +64,8 @@ class IElecBufferMgrSvc{
 //output crate
     
         virtual JM::ElecFeeCrate* get_crate() = 0 ;
+        virtual void create_new_crate() = 0;
+        virtual void delete_crate() = 0; 
 
 
 };
