@@ -235,13 +235,28 @@ vector<Pulse> ElecBufferMgrSvc::get_PulseVector(TimeStamp WaveSimLastTime){
 }
 
 
+vector<Pulse> ElecBufferMgrSvc::get_PulseVector_without_pop(TimeStamp PulseTime_for_trigger){
+
+    vector<Pulse> tem_PulseVector;
+
+    deque<Pulse>::iterator it;
+    for(it = PulseBuffer.begin();
+            it != PulseBuffer.end();
+            it++){
+
+        if(it->pulseHitTime() > PulseTime_for_trigger){
+            break;
+        }
+
+        tem_PulseVector.push_back(*it);
+    }
+    return tem_PulseVector;
+}
 
 
-
-
-
-
-
+void ElecBufferMgrSvc::pop_PulseBufferFront(){
+    PulseBuffer.pop_front();
+}
 
 
 //Trigger Buffer
@@ -269,10 +284,6 @@ void ElecBufferMgrSvc::pop_TriggerTimeStamp(){
     TriggerBuffer.pop_front();
 }
 
-
-void ElecBufferMgrSvc::pop_PulseBufferFront(){
-    PulseBuffer.pop_front();
-}
 
 
 

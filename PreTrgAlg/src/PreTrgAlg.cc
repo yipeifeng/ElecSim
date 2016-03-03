@@ -120,13 +120,26 @@ bool PreTrgAlg::find_Trg_from_PulseBuffer(){
 
     TimeStamp TriggerTime = BufferSvc->get_firstPulseTime(); //for sample test, use firstPulseTime as TriggerTime
 
+    TimeStamp PulseTime_for_trigger = BufferSvc->get_firstPulseTime();
+    PulseTime_for_trigger.Add(m_PulseBufferLength/2.0 * 1e-9);  //this time used to give which pulse will be used to get trigger
+
+    std::vector<Pulse> PulseVector_for_trigger = BufferSvc->get_PulseVector_without_pop(PulseTime_for_trigger);
+
+    if(PulseVector_for_trigger.size() < 200){
+        TimeStamp PulseTime_for_pop = BufferSvc->get_firstPulseTime();
+        PulseTime_for_pop.Add(m_PulseBufferLength/4.0 * 1e-9);  //this time used to give which pulse will be poped 
+        //BufferSvc->pop_Pulse(PulseTime_for_pop); 
+
+
+    }
+
+
+
+
+
+
     BufferSvc->save_to_TriggerBuffer(TriggerTime);
-
-
-
-
     return true;
-
 }
 
 

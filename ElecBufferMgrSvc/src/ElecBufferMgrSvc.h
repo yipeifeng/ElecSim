@@ -80,6 +80,7 @@ class ElecBufferMgrSvc: public IElecBufferMgrSvc, public SvcBase
 
         std::vector<Pulse> get_PulseVector(TimeStamp WaveSimLastTime);
 
+        std::vector<Pulse> get_PulseVector_without_pop(TimeStamp PulseTime_for_trigger);
 
 
 

@@ -53,6 +53,7 @@ class IElecBufferMgrSvc{
 
         virtual std::vector<Pulse> get_PulseVector(TimeStamp WaveSimLastTime) = 0;
 
+        virtual std::vector<Pulse> get_PulseVector_without_pop(TimeStamp PulseTime_for_trigger) = 0;
 
         //Waveform Buffer
 
